@@ -1,0 +1,21 @@
+version: '2'
+services:
+  puffin-api:
+    build:
+      context: ./puffin-api
+      dockerfile: Dockerfile
+    environment:
+      WEBROOT: /puffin-api
+    ports:
+      - "85:80"
+  puffin-db:
+    build:
+      context: ./puffin-db
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: docker-root
+      MYSQL_USER: puffin
+      MYSQL_PASSWORD: puffin
+      MYSQL_DATABASE: puffin
+    ports:
+      - "3311:3306"
