@@ -3,8 +3,10 @@ require __DIR__ . '/vendor/autoload.php';
 
 // Your App
 $app = new Bullet\App();
-$app->path('/', function($request) {
-    return "Hello World!";
+$app->path('/', function($request) use ($app) {
+    $app->get(function() {
+        return "Hello World!";
+    });
 });
   
 // Run the app! (takes $method, $url or Bullet\Request object)
