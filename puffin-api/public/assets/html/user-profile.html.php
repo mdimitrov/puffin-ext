@@ -54,7 +54,7 @@
         <script src="/assets/js/user-profile.js"></script>
     </head>
     <body>
-        <h1>Здравей, <?= $userId ?></h1>
+        <h1>Здравей, <?= $username !== null ? $username : 'Анонимен' ?></h1>
         <div class="forms-wrapper">
             <div class="form-wrapper">
                 <div class="form-header">Променете своите данни</div>

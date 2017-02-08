@@ -1,0 +1,22 @@
+<?php
+
+return [
+    'database' => [
+        'host' => 'puffin-db',
+        'dbname' => 'puffin',
+        'user' => 'puffin',
+        'pass' => 'puffin'
+    ],
+    'pdo' => [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ],
+    'session' => [
+        'name' => '_sess',
+        'lifetime' => 1440,
+        'path' => '',
+        'domain' => '',
+        'secure' => '',
+    ]
+];

@@ -5,7 +5,7 @@ services:
       context: ./puffin-api
       dockerfile: Dockerfile
     environment:
-      WEBROOT: /puffin-api
+      WEBROOT: /puffin-api/public/
     ports:
       - "85:80"
   puffin-db:
