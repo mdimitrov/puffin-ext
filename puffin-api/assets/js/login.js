@@ -1,8 +1,14 @@
 function onSend() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    const errorField = document.getElementById('error');
 
-    document.getElementById('error').innerHTML = '';
+    if (!username || !password) {
+        errorField.innerHTML = 'All fields must be filled!';
+        return;
+    }
+
+    errorField.innerHTML = '';
 
     httpRequest({
         url: '/api/login',
@@ -11,11 +17,9 @@ function onSend() {
     })
         .then(function(response) {
             if (!response.ok) {
-                if (response.message) {
-                    document.getElementById('error').innerHTML = response.message;
-                }
+                errorField.innerHTML = response.message || 'Error';
             } else {
-                console.log(response.user, ' logged successfully')
+                window.location.replace('/user/profile');
             }
         })
         .catch(function(error) {

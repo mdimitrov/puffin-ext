@@ -51,7 +51,6 @@
         <script src="/assets/js/login.js"></script>
     </head>
     <body>
-        <h1><?= $userId ?></h1>
         <div class="login-form-wrapper">
             <div class="header">Влезте в своя профил</div>
             <div class="input-label">Потребител:</div>
