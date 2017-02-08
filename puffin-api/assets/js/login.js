@@ -4,24 +4,21 @@ function onSend() {
 
     document.getElementById('error').innerHTML = '';
 
-    fetch('/api/login', {
+    httpRequest({
+        url: '/api/login',
         method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-    }).then(function (response) {
-        return response.json();
+        body: { username, password }
     })
-    .then(function(response) {
-        if (response.ok) {
-            console.log(response.user, ' logged successfully')
-        } else {
-            document.getElementById('error').innerHTML = response.message;
-        }
-    })
-    .catch(function(error) {
-        console.error(error);
-    })
+        .then(function(response) {
+            if (!response.ok) {
+                if (response.message) {
+                    document.getElementById('error').innerHTML = response.message;
+                }
+            } else {
+                console.log(response.user, ' logged successfully')
+            }
+        })
+        .catch(function(error) {
+            console.log(error);
+        })
 }

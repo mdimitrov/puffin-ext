@@ -47,6 +47,7 @@
                 margin-bottom: 10px;
             }
         </style>
+         <script src="/assets/js/utils.js"></script>
         <script src="/assets/js/login.js"></script>
     </head>
     <body>
