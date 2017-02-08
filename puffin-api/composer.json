@@ -1,5 +1,10 @@
 {
     "require": {
         "vlucas/bulletphp": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Puffin\\": "app/src/"
+        }
     }
 }

@@ -47,7 +47,7 @@
                 margin-bottom: 10px;
             }
         </style>
-        <script src="/assets/js/login.js"></script>
+        <script src="/public/assets/js/login.js"></script>
     </head>
     <body>
         <h1><?= $userId ?></h1>
