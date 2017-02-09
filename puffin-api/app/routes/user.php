@@ -8,9 +8,11 @@ $app->path('user', function($request) use ($app) {
     $app->path('profile', function($request) use ($app) {
         // GET /user/profile
         $app->get(function($request) use ($app) {
-            echo session_id();
+            /** @var Session $session */
+            $session = $app['session'];
+            $username = $session->username;
 
-            return $app->template('user-profile', ['username' => $_SESSION['username']]);
+            return $app->template('user-profile', ['username' => $username]);
         });
     });
 });

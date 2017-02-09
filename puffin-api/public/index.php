@@ -4,7 +4,7 @@
 ##
 error_reporting(-1); // Display ALL errors
 ini_set('display_errors', '1');
-ini_set("session.cookie_httponly", '1'); // Mitigate XSS javascript cookie attacks for browers that support it
+//ini_set("session.cookie_httponly", '1'); // Mitigate XSS javascript cookie attacks for browers that support it
 ini_set("session.use_only_cookies", '1'); // Don't allow session_id in URLs
 
 // Throw Exceptions for everything so we can see the errors
@@ -13,7 +13,7 @@ function exception_error_handler($errno, $errstr, $errfile, $errline ) {
 }
 set_error_handler("exception_error_handler");
 // Start user session (we start it in the session instance)
-session_start();
+//session_start();
 
 ##
 # Setup bullet tiny micro framework
@@ -35,11 +35,10 @@ $request = new Bullet\Request();
 ##
 // $app is a dependency injection container
 $app['config'] = $config;
-//$app['session'] = function($app) {
-//    // initialize session and start it
-//    return new Puffin\Session($app['config']['session']);
-//};
-//$app['session'];
+$app['session'] = function($app) {
+    // initialize session and start it
+    return new Puffin\Session($app['config']['session']);
+};
 // will get a new instance on every call
 $app['user_mapper'] = function() {
     return new \Puffin\Model\DataMapper\UserMapper();

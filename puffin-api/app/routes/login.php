@@ -22,15 +22,11 @@ $app->path('api', function($request) use ($app) {
                 ]);
             } else {
                 /** @var Session $session */
-//                $session = $app['session'];
-//                $session->username = $username;
-
-                $_SESSION['username'] = $username;
+                $session = $app['session'];
+                $session->username = $username;
 
                 return [
-                    'ok' => true,
-                    'user' => [ 'username' => $username ],
-                    'sessId' => session_id()
+                    'ok' => true
                 ];
             }
 
