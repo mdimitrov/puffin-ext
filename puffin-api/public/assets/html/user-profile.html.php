@@ -49,6 +49,9 @@
                 height: 20px;
                 color: red;
             }
+            .error.success {
+                color: green;
+            }
             input {
                 width: 98%;
                 height: 25px;

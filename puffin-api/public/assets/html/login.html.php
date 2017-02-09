@@ -52,6 +52,9 @@
                 height: 20px;
                 color: red;
             }
+            .error.success {
+                color: green;
+            }
         </style>
          <script src="/assets/js/utils.js"></script>
         <script src="/assets/js/login.js"></script>
