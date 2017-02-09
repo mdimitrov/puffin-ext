@@ -50,6 +50,7 @@ $app['user_mapper'] = function() {
 ##
 require BULLET_ROUTES_ROOT . '/login.php';
 require BULLET_ROUTES_ROOT . '/user.php';
+require BULLET_ROUTES_ROOT . '/admin.php';
 
 echo $app->run($request);
 

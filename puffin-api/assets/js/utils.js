@@ -1,5 +1,5 @@
 function httpRequest(data) {
-    const requestObj = { method: data.method };
+    const requestObj = { method: data.method, credentials: 'same-origin' };
 
     if (requestObj.method === 'POST') {
         requestObj.body = JSON.stringify(data.body);
