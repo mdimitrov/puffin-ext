@@ -10,19 +10,21 @@ function onSend() {
 
     errorField.innerHTML = '';
 
-    httpRequest({
-        url: '/api/login',
-        method: 'POST',
-        body: { username, password }
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                errorField.innerHTML = response.message || 'Error';
-            } else {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            const response = JSON.parse(xhttp.responseText);
+
+            if (this.status === 200) {
                 window.location.replace('/user/profile');
+            } else {
+                errorField.innerHTML = response.message || 'Error';
             }
-        })
-        .catch(function(error) {
-            console.log(error);
-        })
+        }
+    };
+
+    xhttp.open('POST', '/api/login', true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({ username, password }));
 }

@@ -10,21 +10,23 @@ function onEditProfileSend() {
 
     errorField.innerHTML = '';
 
-    httpRequest({
-        url: '/api/edit-profile',
-        method: 'POST',
-        body: { username, email }
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                 errorField.innerHTML = response.message || 'Error';
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            const response = JSON.parse(xhttp.responseText);
+
+            if (this.status === 200) {
+                
             } else {
-                console.log(response.username, response.email, ' edit successfully')
+                errorField.innerHTML = response.message || 'Error';
             }
-        })
-        .catch(function(error) {
-            console.log(error);
-        })
+        }
+    };
+
+    xhttp.open('POST', '/api/edit-profile', true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({ username, email }));
 }
 
 function onChangePasswordSend() {
@@ -45,19 +47,19 @@ function onChangePasswordSend() {
 
     errorField.innerHTML = '';
 
-    httpRequest({
-        url: '/api/change-password',
-        method: 'POST',
-        body: { oldPassword, newPassword }
-    })
-        .then(function(response) {
-            if (!response.ok) {
-                 errorField.innerHTML = response.message || 'Error';
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            const response = JSON.parse(xhttp.responseText);
+
+            if (this.status === 200) {
+                
             } else {
-                console.log('change password successfully')
+                errorField.innerHTML = response.message || 'Error';
             }
-        })
-        .catch(function(error) {
-            console.log(error);
-        })
+        }
+    };
+
+    xhttp.open('POST', '/api/change-password', true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({ oldPassword, newPassword }));
 }
