@@ -43,6 +43,12 @@
                 text-align: center;
                 cursor: pointer;
             }
+            .error {
+                text-align: center;
+                margin-top: 10px;
+                height: 20px;
+                color: red;
+            }
             input {
                 width: 98%;
                 height: 25px;

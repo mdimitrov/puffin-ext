@@ -46,6 +46,12 @@
                 margin: 0;
                 margin-bottom: 10px;
             }
+            .error {
+                text-align: center;
+                margin-top: 10px;
+                height: 20px;
+                color: red;
+            }
         </style>
          <script src="/assets/js/utils.js"></script>
         <script src="/assets/js/login.js"></script>
