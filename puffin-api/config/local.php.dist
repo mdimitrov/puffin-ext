@@ -5,10 +5,13 @@ return [
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
 
         'db' => [
-            'host' => 'puffin-db',
+            'host' => '127.0.0.1',
+//            'host' => 'puffin-db',
             'dbname' => 'puffin',
             'user' => 'puffin',
-            'pass' => 'puffin'
+            'pass' => 'puffin',
+            'port' => 3311,
+//            'port' => 3306,
         ],
 
         // Renderer settings
@@ -22,6 +25,7 @@ return [
             'path' => '/',
             'domain' => '',
             'secure' => false,
+            'httponly' => false
         ],
     ],
 ];
