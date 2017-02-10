@@ -46,10 +46,11 @@ function onEditProfileSend() {
     const currentUsernameDOM = document.getElementById('hidden-username');
     const currentUsername = currentUsernameDOM.innerHTML;
     const currentEmailDOM = document.getElementById('hidden-email');
+    const currentEmail = currentEmailDOM.innerHTML;
     const usernameInput = document.getElementById('form-username')
-    const username = usernameInput.value;
+    const username = usernameInput.value || currentUsername;
     const emailInput = document.getElementById('form-email');
-    const email = emailInput.value;
+    const email = emailInput.value || currentEmail;
     const errorField = document.getElementById('edit-profile-error');
 
     if (!username && !email) {
