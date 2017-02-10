@@ -66,8 +66,7 @@ $app->post('/login', function ($request, $response, $args) {
         ];
         $status = 401;
     } else {
-        $um = new UserMapper($this->db);
-        $user = $um->findByUsername($username);
+
 
         if (isset($user) && $user instanceof User &&  md5($password) === $user->password) {
             $this->session->set('username', $username);
@@ -100,10 +99,10 @@ $app->get('/admin', function ($request, $response, $args) {
 })->add($ensureSession);
 
 $app->get('/user/{username}', function ($request, $response, $args) {
-    // Render index view
     /** @var User $loggedUser */
     $loggedUser = $request->getAttribute('loggedUser');
 
+    // Render index view
     return $this->renderer->render($response, 'user-profile.phtml', $loggedUser->toAssoc());
 })->add($ensureSession)->add($recognize);
 

@@ -27,7 +27,16 @@ class UserMapper
      */
     public function findById($id)
     {
-        $sql = 'SELECT * FROM user WHERE id=:id';
+        $sql = '
+        SELECT
+          username,
+          password,
+          email,
+          role,
+          theme_id as topic,
+          num_of_changes as numberOfChanges
+        FROM user
+        WHERE id=:id';
         $statement = $this->pdo->prepare($sql);
         $statement->execute(['id' => $id]);
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
@@ -44,7 +53,16 @@ class UserMapper
      * @return User
      */
     public function findByUsername($username) {
-        $sql = 'SELECT * FROM user WHERE username=:username';
+        $sql = '
+        SELECT
+          username,
+          password,
+          theme_id as topic,
+          email,
+          role,
+          num_of_changes as numberOfChanges
+        FROM user
+        WHERE username=:username';
         $statement = $this->pdo->prepare($sql);
         $statement->execute(['username' => $username]);
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
@@ -57,13 +75,20 @@ class UserMapper
     }
 
     /**
-     * @param $username
      * @return array
      */
-    public function findAllByUsername($username) {
-        $sql = 'SELECT * FROM user WHERE username=:username';
+    public function findAll() {
+        $sql = '
+        SELECT
+          username,
+          password,
+          email,
+          role,
+          theme_id as topic,
+          num_of_changes as numberOfChanges
+        FROM user';
         $statement = $this->pdo->prepare($sql);
-        $statement->execute(['username' => $username]);
+        $statement->execute();
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
         if (!count($rows)) {

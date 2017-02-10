@@ -3,6 +3,12 @@ namespace Puffin\Model;
 
 class User
 {
+
+    /**
+     * @var number
+     */
+    public $id;
+
     /**
      * @var string
      */
@@ -14,9 +20,20 @@ class User
     public $password;
 
     /**
+     * @var number
+     */
+    public $topic;
+
+    /**
      * @var string
      */
-    public $id;
+    public $role;
+
+
+    /**
+     * @var number
+     */
+    public $numberOfChanges;
 
     /**
      * @var string
@@ -28,7 +45,10 @@ class User
         return new self(
             $state['username'],
             $state['email'],
-            $state['password']
+            $state['password'],
+            $state['topic'],
+            $state['numberOfChanges'],
+            $state['role']
         );
     }
 
@@ -37,14 +57,20 @@ class User
             'username' => $this->username,
             'email' => $this->email,
             'password' => $this->password,
+            'topic' => $this->topic,
+            'numberOfChanges' => $this->numberOfChanges,
+            'role' => $this->role,
         ];
     }
 
-    public function __construct($username, $email, $password)
+    public function __construct($username, $email, $password, $topic, $numberOfChanges, $role)
     {
         $this->username = $username;
         $this->email = $email;
         $this->password = $password;
+        $this->topic = $topic;
+        $this->numberOfChanges = $numberOfChanges;
+        $this->role = $role;
     }
 
     /**
