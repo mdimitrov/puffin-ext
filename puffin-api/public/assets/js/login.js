@@ -19,7 +19,7 @@ function onSend() {
             try {
                 response = JSON.parse(xhttp.responseText);
             } catch (e) {
-                console.log(e);
+                console.error(e);
             }
 
             if (this.status === 200) {

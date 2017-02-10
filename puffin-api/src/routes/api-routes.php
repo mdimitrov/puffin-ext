@@ -56,6 +56,14 @@ $app->get('/api/user/{username}', function ($request, $response, $args) {
 $app->put('/api/user/{username}', function ($request, $response, $args) {
     $loggedUser = $request->getAttribute('loggedUser');
     $userId = $loggedUser->id;
+
+    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Action is not permitted'
+        ], 403);
+    }
+
     $username = $request->getParam('username');
     $email = $request->getParam('email');
 
@@ -75,6 +83,11 @@ $app->put('/api/user/{username}', function ($request, $response, $args) {
 $app->put('/api/user/{username}/password', function ($request, $response, $args) {
     $loggedUser = $request->getAttribute('loggedUser');
     $userId = $loggedUser->id;
+
+    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
+        return $response->withJson([ 'ok' => false ], 403);
+    }
+
     $oldPassword = $request->getParam('oldPassword');
     $newPassword = $request->getParam('newPassword');
 
@@ -92,7 +105,7 @@ $app->put('/api/user/{username}/password', function ($request, $response, $args)
             'ok' => false,
             'message' => 'Incorrect password'
         ];
-        $status = 401;
+        $status = 400;
     }
     /** @var $response \Slim\Http\Response */
     return $response->withJson($data, $status);

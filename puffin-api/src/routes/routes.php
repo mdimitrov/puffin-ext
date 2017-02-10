@@ -107,7 +107,14 @@ $app->get('/user/{username}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $loggedUser = $request->getAttribute('loggedUser');
 
+    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
+        return $response->withRedirect('/user/' . $loggedUser->username, 302);
+    }
+
+    $um = new UserMapper($this->db);
+    $user = $um->findByUsername($args['username']);
+
     // Render index view
-    return $this->renderer->render($response, 'user-profile.phtml', $loggedUser->toAssoc());
+    return $this->renderer->render($response, 'user-profile.phtml', $user->toAssoc());
 })->add($ensureSession)->add($recognize);
 

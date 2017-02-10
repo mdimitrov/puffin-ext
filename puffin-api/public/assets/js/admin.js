@@ -23,7 +23,7 @@ function constructTableRow(data, index) {
 function onPageLoad() {
     console.log('TRUGVAM');
     httpRequest({
-        'url': '/api/admin/users',
+        'url': '/api/users',
         'method': 'GET'
     })
         .then(function(response) {
