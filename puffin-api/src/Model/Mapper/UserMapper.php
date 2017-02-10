@@ -126,6 +126,17 @@ class UserMapper
         $statement->execute($userData);
     }
 
+    public function updateRole($userId, $role) {
+        $userData = [
+            'id' => $userId,
+            'role' => $role
+        ];
+
+        $sql = 'UPDATE user SET role=:role WHERE id=:id';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
+    }
+
     /**
      * @param User $user
      *

@@ -97,3 +97,29 @@ $app->put('/api/user/{username}/password', function ($request, $response, $args)
     /** @var $response \Slim\Http\Response */
     return $response->withJson($data, $status);
 })->add($ensureSession)->add($recognize);
+
+$app->put('/api/admin/role', function ($request, $response, $args) {
+    $loggedUser = $request->getAttribute('loggedUser');
+    $username = $request->getParam('username');
+    $role = $request->getParam('role');
+
+    if ($loggedUser->role == 'admin') {
+        $um = new UserMapper($this->db);
+        $user = $um->findByUsername($username);
+        $um->updateRole($user->id, $role);
+
+        $data = [
+            'ok' => true,
+            'message' => 'Success'
+        ];
+        $status = 200;
+    } else {
+        $data = [
+            'ok' => false,
+            'message' => 'Unauthorized'
+        ];
+        $status = 403;
+    }
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson($data, $status);
+})->add($ensureSession)->add($recognize);
