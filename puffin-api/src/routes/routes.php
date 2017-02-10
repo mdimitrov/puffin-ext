@@ -50,6 +50,10 @@ $recognize = function ($request, $response, $next) {
 #### Route handlers
 
 $app->get('/login', function ($request, $response, $args) {
+    if ($username = $this->session->get('username', false)) {
+        return $response->withRedirect('/user/' . $username, 302);
+    }
+
     // Render index view
     return $this->renderer->render($response, 'login.phtml', $args);
 });
