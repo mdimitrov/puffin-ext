@@ -29,6 +29,7 @@ class UserMapper
     {
         $sql = '
         SELECT
+          id,
           username,
           password,
           email,
@@ -55,6 +56,7 @@ class UserMapper
     public function findByUsername($username) {
         $sql = '
         SELECT
+          id,
           username,
           password,
           theme_id as topic,
@@ -80,6 +82,7 @@ class UserMapper
     public function findAll() {
         $sql = '
         SELECT
+          id,
           username,
           password,
           email,
@@ -98,6 +101,17 @@ class UserMapper
         $users = array_map(function($row) { return $this->mapRowToUser($row); }, $rows);
 
         return $users;
+    }
+
+    public function updatePassword($userId, $password) {
+       $userData = [
+            'id' => $userId,
+            'password' => $password
+        ];
+
+        $sql = 'UPDATE user SET password=md5(:password) WHERE id=:id';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
     }
 
     /**

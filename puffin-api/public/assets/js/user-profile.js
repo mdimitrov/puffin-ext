@@ -1,8 +1,8 @@
 function onPageLoad() {
     setTimeout(function() {
-        const username = document.getElementById('initial-username').innerHTML;
-        const email = document.getElementById('initial-email').innerHTML;
-        const role = document.getElementById('initial-role').innerHTML;
+        const username = document.getElementById('hidden-username').innerHTML;
+        const email = document.getElementById('hidden-email').innerHTML;
+        const role = document.getElementById('hidden-role').innerHTML;
 
         document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + username;
         document.getElementById('email-wrapper').innerHTML = '<b>Email:</b> ' + email;
@@ -86,6 +86,7 @@ function onEditProfileSend() {
 }
 
 function onChangePasswordSend() {
+    const currentUsername = document.getElementById('hidden-username').innerHTML;
     const oldPasswordInput = document.getElementById('old-password');
     const oldPassword = oldPasswordInput.value;
     const newPasswordInput = document.getElementById('new-password');
@@ -131,7 +132,7 @@ function onChangePasswordSend() {
         }
     };
 
-    xhttp.open('PUT', '/user/password', true);
+    xhttp.open('PUT', '/api/user/' + currentUsername + '/password', true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ oldPassword, newPassword }));
 }

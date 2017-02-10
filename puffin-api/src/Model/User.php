@@ -43,6 +43,7 @@ class User
     public static function fromState(array $state)
     {
         return new self(
+            $state['id'],
             $state['username'],
             $state['email'],
             $state['password'],
@@ -54,6 +55,7 @@ class User
 
     public function toAssoc() {
         return [
+            'id' => $this->id,
             'username' => $this->username,
             'email' => $this->email,
             'password' => $this->password,
@@ -63,8 +65,9 @@ class User
         ];
     }
 
-    public function __construct($username, $email, $password, $topic, $numberOfChanges, $role)
+    public function __construct($id, $username, $email, $password, $topic, $numberOfChanges, $role)
     {
+        $this->id = $id;
         $this->username = $username;
         $this->email = $email;
         $this->password = $password;
