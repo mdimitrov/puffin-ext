@@ -1,3 +1,47 @@
+function onPageLoad() {
+    setTimeout(function() {
+        const username = document.getElementById('initial-username').innerHTML;
+        const email = document.getElementById('initial-email').innerHTML;
+        const role = document.getElementById('initial-role').innerHTML;
+
+        document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + username;
+        document.getElementById('email-wrapper').innerHTML = '<b>Email:</b> ' + email;
+
+        if (role === 'admin') {
+            const adminButton = document.createElement('A');
+            adminButton.href = '/admin';
+            adminButton.className = 'button admin-button';
+            adminButton.innerHTML = 'Go to admin panel';
+            document.getElementById('admin-button-wrapper').appendChild(adminButton);
+        }
+    }, 200);
+}
+
+function onLogoutClick() {
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            var response = {};
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch(e) {
+                console.log(e);
+            }
+
+            if (this.status === 200) {
+                window.location.replace('/login');
+            } else {
+                console.log(response);
+            }
+        }
+    };
+
+    xhttp.open('GET', '/logout', true);
+    xhttp.send();
+}
+
 function onEditProfileSend() {
     const usernameInput = document.getElementById('form-username')
     const username = usernameInput.value;
@@ -91,3 +135,5 @@ function onChangePasswordSend() {
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ oldPassword, newPassword }));
 }
+
+window.onload = onPageLoad();
