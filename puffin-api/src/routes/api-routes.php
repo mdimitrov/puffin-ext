@@ -54,8 +54,23 @@ $app->get('/api/user/{username}', function ($request, $response, $args) {
     return $response->withJson([], 200);
 })->add($ensureSession);
 $app->put('/api/user/{username}', function ($request, $response, $args) {
+    $loggedUser = $request->getAttribute('loggedUser');
+    $userId = $loggedUser->id;
+    $username = $request->getParam('username');
+    $email = $request->getParam('email');
+
+    $um = new UserMapper($this->db);
+    $um->updateInfo($userId, $username, $email);
+    $this->session->set('username', $username);
+
+    $data = [
+        'ok' => true,
+        'username' => $username,
+        'email' => $email
+    ];
+    $status = 200;
     /** @var $response \Slim\Http\Response */
-    return $response->withJson([], 200);
+    return $response->withJson($data, $status);
 })->add($ensureSession)->add($recognize);
 $app->put('/api/user/{username}/password', function ($request, $response, $args) {
     $loggedUser = $request->getAttribute('loggedUser');

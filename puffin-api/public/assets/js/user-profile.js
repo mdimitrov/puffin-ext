@@ -43,6 +43,9 @@ function onLogoutClick() {
 }
 
 function onEditProfileSend() {
+    const currentUsernameDOM = document.getElementById('hidden-username');
+    const currentUsername = currentUsernameDOM.innerHTML;
+    const currentEmailDOM = document.getElementById('hidden-email');
     const usernameInput = document.getElementById('form-username')
     const username = usernameInput.value;
     const emailInput = document.getElementById('form-email');
@@ -72,6 +75,13 @@ function onEditProfileSend() {
             }
 
             if (this.status === 200) {
+                const newUsername = response.username;
+                const newEmail = response.email;
+
+                currentUsernameDOM.innerHTML = newUsername;
+                currentEmailDOM.innderHTML = newEmail;
+                document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + newUsername;
+                document.getElementById('email-wrapper').innerHTML = '<b>Email:</b> ' + newEmail;
                 errorField.innerHTML = 'Success!';
                 errorField.className += ' success';
             } else {
@@ -80,7 +90,7 @@ function onEditProfileSend() {
         }
     };
 
-    xhttp.open('PUT', '/user/edit', true);
+    xhttp.open('PUT', '/api/user/' + currentUsername, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ username, email }));
 }

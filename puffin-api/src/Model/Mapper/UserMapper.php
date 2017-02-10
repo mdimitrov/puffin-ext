@@ -114,6 +114,18 @@ class UserMapper
         $statement->execute($userData);
     }
 
+    public function updateInfo($userId, $username, $email) {
+       $userData = [
+            'id' => $userId,
+            'username' => $username,
+            'email' => $email
+        ];
+
+        $sql = 'UPDATE user SET username=:username, email=:email WHERE id=:id';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
+    }
+
     /**
      * @param User $user
      *
