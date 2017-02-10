@@ -116,7 +116,7 @@ $app->put('/api/admin/role', function ($request, $response, $args) {
     $username = $request->getParam('username');
     $role = $request->getParam('role');
 
-    if ($loggedUser->role == 'admin') {
+    if ($loggedUser->role === 'admin') {
         $um = new UserMapper($this->db);
         $user = $um->findByUsername($username);
         $um->updateRole($user->id, $role);

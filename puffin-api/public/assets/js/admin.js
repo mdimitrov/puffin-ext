@@ -21,49 +21,39 @@ function constructTableRow(data, index) {
 }
 
 function onPageLoad() {
-    console.log('TRUGVAM');
-    httpRequest({
-        'url': '/api/users',
-        'method': 'GET'
-    })
-        .then(function(response) {
-
-        })
-        .catch(function(error) {
-            setTimeout(() =>{
+    setTimeout(() =>{
                 const data = [
                     {
-                        username: 'Nasko Picha',
+                        username: 'Atanas Yanchevski',
                         email: 'nasko123@abv.bg',
                         projectNumber: 12,
-                        projectName: 'Pichovski proekt',
+                        projectName: 'Testov proekt',
                         uploadDate: new Date(),
-                        lastComment: 'Ne pip che plqs',
+                        lastComment: 'Ne e finalno',
                         isLocked: false
                     },
                     {
-                        username: 'Misho Toploto',
-                        email: 'mishakamadafaka@abv.bg',
+                        username: 'Mihael Dimitrov',
+                        email: 'misho@abv.bg',
                         projectNumber: 13,
-                        projectName: 'Tup proekt',
+                        projectName: 'Testov proekt 2',
                         uploadDate: new Date(),
                         lastComment: 'Help me',
                         isLocked: true
                     },
                     {
-                        username: 'Rado Mastifa',
-                        email: 'radkapiratka@abv.bg',
+                        username: 'Rado Milushev',
+                        email: 'radko@abv.bg',
                         projectNumber: 14,
-                        projectName: 'Smotan proekt',
+                        projectName: 'Testov proekt 5121',
                         uploadDate: new Date(),
-                        lastComment: 'Kvo e tva be',
+                        lastComment: 'Testvam komentar',
                         isLocked: false
                     }
                 ];
 
                 data.forEach(constructTableRow);
             }, 2000);
-        });
 }
 
 window.onload = onPageLoad;
