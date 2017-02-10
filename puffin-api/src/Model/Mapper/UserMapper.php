@@ -50,7 +50,7 @@ class UserMapper
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
 
         if (!$result) {
-            throw new \InvalidArgumentException("User $username not found");
+            return $result;
         }
 
         return $this->mapRowToUser($result);
@@ -67,7 +67,7 @@ class UserMapper
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
         if (!count($rows)) {
-            throw new \InvalidArgumentException("User $username not found");
+            return [];
         }
 
         $users = array_map(function($row) { return $this->mapRowToUser($row); }, $rows);
