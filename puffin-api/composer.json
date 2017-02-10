@@ -18,7 +18,7 @@
         "slim/php-view": "^2.0"
     },
 	"scripts": {
-        "start": "php -S 0.0.0.0:8080 -t public/"
+        "start": "php -S 0.0.0.0:8080 -t public"
 	},
     "autoload": {
         "psr-4": {
