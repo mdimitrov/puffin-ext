@@ -1,0 +1,28 @@
+{
+    "name": "puffin-extensions",
+    "description": "An extension of the functionality of Puffin project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mihael Dimitroff",
+            "email": "mihael.dimitroff@gmail.com"
+        },
+        {
+            "name": "Atanas Yanchevski",
+            "email": "atanas.yanchevski@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
+        "slim/php-view": "^2.0"
+    },
+	"scripts": {
+        "start": "php -S 0.0.0.0:8080 -t public"
+	},
+    "autoload": {
+        "psr-4": {
+            "Puffin\\": "src/"
+        }
+    }
+}
