@@ -11,20 +11,40 @@ class User
     /**
      * @var string
      */
+    public $password;
+
+    /**
+     * @var string
+     */
+    public $id;
+
+    /**
+     * @var string
+     */
     public  $email;
 
     public static function fromState(array $state)
     {
         return new self(
             $state['username'],
-            $state['email']
+            $state['email'],
+            $state['password']
         );
     }
 
-    public function __construct($username, $email)
+    public function toAssoc() {
+        return [
+            'username' => $this->username,
+            'email' => $this->email,
+            'password' => $this->password,
+        ];
+    }
+
+    public function __construct($username, $email, $password)
     {
         $this->username = $username;
         $this->email = $email;
+        $this->password = $password;
     }
 
     /**

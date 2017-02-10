@@ -17,14 +17,14 @@ function onSend() {
             const response = JSON.parse(xhttp.responseText);
 
             if (this.status === 200) {
-                window.location.replace('/user/profile');
+                window.location.replace('/user/' + response.username);
             } else {
                 errorField.innerHTML = response.message || 'Error';
             }
         }
     };
 
-    xhttp.open('POST', '/api/login', true);
+    xhttp.open('POST', '/login', true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ username, password }));
 }

@@ -1,15 +1,22 @@
 <?php
-namespace Puffin\Model\DataMapper;
+namespace Puffin\Model\Mapper;
 
 use \Puffin\Model\User;
-use Puffin\Db\SimpleDB;
 
-class UserMapper extends SimpleDB
+class UserMapper
 {
+    /**
+     * @var \PDO
+     */
+    private $pdo;
 
-    public function __construct()
+    /**
+     * UserMapper constructor.
+     * @param $pdo \PDO
+     */
+    public function __construct($pdo)
     {
-        parent::__construct();
+        $this->pdo = $pdo;
     }
 
     /**
@@ -21,9 +28,11 @@ class UserMapper extends SimpleDB
     public function findById($id)
     {
         $sql = 'SELECT * FROM user WHERE id=:id';
-        $result = $this->prepare($sql)->execute(['id' => $id])->fetchRowAssoc();
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['id' => $id]);
+        $result = $statement->fetch(\PDO::FETCH_ASSOC);
 
-        if ($result === null) {
+        if (!$result) {
             throw new \InvalidArgumentException("User #$id not found");
         }
 
@@ -36,9 +45,11 @@ class UserMapper extends SimpleDB
      */
     public function findByUsername($username) {
         $sql = 'SELECT * FROM user WHERE username=:username';
-        $result = $this->prepare($sql)->execute([ 'username' => $username])->fetchRowAssoc();
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['username' => $username]);
+        $result = $statement->fetch(\PDO::FETCH_ASSOC);
 
-        if ($result === null) {
+        if (!$result) {
             throw new \InvalidArgumentException("User $username not found");
         }
 
@@ -51,9 +62,11 @@ class UserMapper extends SimpleDB
      */
     public function findAllByUsername($username) {
         $sql = 'SELECT * FROM user WHERE username=:username';
-        $rows = $this->prepare($sql)->execute([ 'username' => $username])->fetchAllAssoc();
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['username' => $username]);
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-        if ($rows === null) {
+        if (!count($rows)) {
             throw new \InvalidArgumentException("User $username not found");
         }
 
@@ -70,14 +83,15 @@ class UserMapper extends SimpleDB
     public function save($user) {
         $userData = [
             'username' => $user->getUsername(),
-            'email' => $user->getEmail()
+            'email' => $user->getEmail(),
+            'password' => $user->password
         ];
 
-        $sql = 'INSERT INTO user (username, email) VALUES (:username, :email)';
+        $sql = 'INSERT INTO user (username, password, email) VALUES (:username, MD5(:password), :email)';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
 
-        $userId = $this->prepare($sql)->execute($userData)->getLastInsertId();
-
-        $userData['id'] = $userId;
+        $userData['id'] = $this->pdo->lastInsertId();
 
         return $this->mapRowToUser($userData);
     }
