@@ -14,7 +14,13 @@ function onSend() {
 
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
-            const response = JSON.parse(xhttp.responseText);
+            var response = {};
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch (e) {
+                console.log(e);
+            }
 
             if (this.status === 200) {
                 window.location.replace('/user/' + response.username);

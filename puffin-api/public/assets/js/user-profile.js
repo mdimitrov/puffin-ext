@@ -16,9 +16,16 @@ function onEditProfileSend() {
 
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
+            var response = {};
+
             usernameInput.value = '';
             emailInput.value = '';
-            const response = JSON.parse(xhttp.responseText);
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch(e) {
+                console.log(e);
+            }
 
             if (this.status === 200) {
                 errorField.innerHTML = 'Success!';
@@ -59,10 +66,17 @@ function onChangePasswordSend() {
 
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4) {
+            var response = {};
+
             oldPasswordInput.value = '';
             newPasswordInput.value = '';
             repeatNewPasswordInput.value = '';
-            const response = JSON.parse(xhttp.responseText);
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch (e) {
+                return;
+            }
 
             if (this.status === 200) {
                 errorField.innerHTML = 'Success!';

@@ -59,7 +59,7 @@ $app->post('/login', function ($request, $response, $args) {
     $username = $request->getParam('username');
     $password = $request->getParam('password');
 
-    if (!isset($username)) {
+    if (!isset($username) || !isset($password)) {
         $data = [
             'ok' => false,
             'message' => 'Invalid username or password'
@@ -67,15 +67,28 @@ $app->post('/login', function ($request, $response, $args) {
         $status = 401;
     } else {
         $um = new UserMapper($this->db);
-        $um->save(User::fromState([
-            'username' => $username,
-            'password' => $password,
-            'email' => 'test@test.com',
-        ]));
-        $this->session->set('username', $username);
-
-        $data = ['ok' => true, 'username' => $username];
-        $status = 200;
+        // Ostavqm go za da si napravish acc
+        // $um->save(User::fromState([
+        //     'username' => $username,
+        //     'password' => $password,
+        //     'email' => 'test@test.com',
+        // ]));
+        $user = $um->findByUsername($username);
+        
+        if (md5($password) === $user->password) {
+            $this->session->set('username', $username);
+            $data = [
+                'ok' => true,
+                'username' => $username
+            ];
+            $status = 200;
+        } else {
+            $data = [
+                'ok' => false,
+                'message' => 'Invalid username or password'
+            ];
+            $status = 401;
+        }
     }
 
     /** @var $response \Slim\Http\Response */
