@@ -1,10 +1,12 @@
 function onPageLoad() {
     setTimeout(function() {
         const username = document.getElementById('hidden-username').innerHTML;
+        const fullName = document.getElementById('hidden-fullName').innerHTML;
         const email = document.getElementById('hidden-email').innerHTML;
         const role = document.getElementById('hidden-role').innerHTML;
 
         document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + username;
+        document.getElementById('fullName-wrapper').innerHTML = '<b>Име:</b> ' + fullName;
         document.getElementById('email-wrapper').innerHTML = '<b>Email:</b> ' + email;
 
         if (role === 'admin') {
@@ -14,7 +16,7 @@ function onPageLoad() {
             adminButton.innerHTML = 'Go to admin panel';
             document.getElementById('admin-button-wrapper').appendChild(adminButton);
         }
-    }, 200);
+    }, 50);
 }
 
 function onLogoutClick() {
@@ -43,17 +45,20 @@ function onLogoutClick() {
 }
 
 function onEditProfileSend() {
-    const currentUsernameDOM = document.getElementById('hidden-username');
-    const currentUsername = currentUsernameDOM.innerHTML;
+    const username = document.getElementById('hidden-username').innerHTML;
+    const id = document.getElementById('hidden-id').innerHTML;
+
+    const currentFullNameDOM = document.getElementById('hidden-fullName');
+    const currentFullName = currentFullNameDOM.innerHTML;
     const currentEmailDOM = document.getElementById('hidden-email');
     const currentEmail = currentEmailDOM.innerHTML;
-    const usernameInput = document.getElementById('form-username')
-    const username = usernameInput.value || currentUsername;
+    const fullNameInput = document.getElementById('form-fullName');
+    const fullName = fullNameInput.value || currentFullName;
     const emailInput = document.getElementById('form-email');
     const email = emailInput.value || currentEmail;
     const errorField = document.getElementById('edit-profile-error');
 
-    if (!username && !email) {
+    if (!fullName && !email) {
         errorField.innerHTML = 'At least one field should be filled';
         return;
     }
@@ -66,7 +71,7 @@ function onEditProfileSend() {
         if (this.readyState === 4) {
             var response = {};
 
-            usernameInput.value = '';
+            fullNameInput.value = '';
             emailInput.value = '';
 
             try {
@@ -76,12 +81,13 @@ function onEditProfileSend() {
             }
 
             if (this.status === 200) {
-                const newUsername = response.username;
-                const newEmail = response.email;
+                const newfullName = response.data.fullName;
+                const newEmail = response.data.email;
 
-                currentUsernameDOM.innerHTML = newUsername;
+                fullNameInput.innerHTML = newfullName;
                 currentEmailDOM.innderHTML = newEmail;
-                document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + newUsername;
+                document.getElementById('username-wrapper').innerHTML = '<b>Потребител:</b> ' + username;
+                document.getElementById('fullName-wrapper').innerHTML = '<b>Име:</b> ' + newfullName;
                 document.getElementById('email-wrapper').innerHTML = '<b>Email:</b> ' + newEmail;
                 errorField.innerHTML = 'Success!';
                 errorField.className += ' success';
@@ -91,13 +97,12 @@ function onEditProfileSend() {
         }
     };
 
-    xhttp.open('PUT', '/api/user/' + currentUsername, true);
+    xhttp.open('PUT', '/api/users/' + id , true);
     xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify({ username, email }));
+    xhttp.send(JSON.stringify({ action: 'updateInfo', data: { fullName, email } }));
 }
 
 function onChangePasswordSend() {
-    const currentUsername = document.getElementById('hidden-username').innerHTML;
     const oldPasswordInput = document.getElementById('old-password');
     const oldPassword = oldPasswordInput.value;
     const newPasswordInput = document.getElementById('new-password');
@@ -143,9 +148,11 @@ function onChangePasswordSend() {
         }
     };
 
-    xhttp.open('PUT', '/api/user/' + currentUsername + '/password', true);
+    const id = document.getElementById('hidden-id').innerHTML;
+
+    xhttp.open('PUT', '/api/users/' + id, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify({ oldPassword, newPassword }));
+    xhttp.send(JSON.stringify({ action: 'updatePassword', data: { oldPassword, newPassword } }));
 }
 
 window.onload = onPageLoad();

@@ -102,29 +102,6 @@ class Session
     }
 
     /**
-     * Magic method for get.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
-     * Magic method for set.
-     *
-     * @param string $key
-     * @param mixed $value
-     */
-    public function __set($key, $value)
-    {
-        $this->set($key, $value);
-    }
-
-    /**
      * Magic method for delete.
      *
      * @param string $key
@@ -144,5 +121,15 @@ class Session
     public function __isset($key)
     {
         return $this->exists($key);
+    }
+
+    /**
+     * @param $userData array
+     */
+    public function updateWithUserData($userData)
+    {
+        foreach ($userData as $key => $value) {
+            $this->set('user.' . $key, $value);
+        }
     }
 }

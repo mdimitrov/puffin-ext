@@ -13,12 +13,21 @@ use Puffin\Model\Mapper\UserMapper;
  * @return \Slim\Http\Response
  */
 $ensureSession = function ($request, $response, $next) {
-    $username = $this->session->get('username', null);
+    $um = new UserMapper($this->db);
+    $user = $um->findById($this->session->get('user.id'));
 
-    if (isset($username)) {
+    if (isset($user)) {
+        $request = $request->withAttribute('loggedUser', $user);
         $response = $next($request, $response);
-    } else {
+    } elseif ($request->isGet()) {
+        // if the request is get redirect the user to login page
+        // important! this is only for the html returning routes
         $response = $response->withRedirect('/login', 302);
+    } else {
+        $response = $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
     }
 
     return $response;
@@ -31,17 +40,17 @@ $ensureSession = function ($request, $response, $next) {
  *
  * @return \Slim\Http\Response
  */
-$recognize = function ($request, $response, $next) {
-    $sessUsername = $this->session->get('username');
+$ensureAdmin = function ($request, $response, $next) {
+    /** @var User $loggedUser */
+    $loggedUser = $request->getAttribute('loggedUser');
 
-    $um = new UserMapper($this->db);
-    $user = $um->findByUsername($sessUsername);
-
-    if (isset($user)) {
-        $request = $request->withAttribute('loggedUser', $user);
+    if (isset($loggedUser) && $loggedUser->isAdmin()) {
         $response = $next($request, $response);
     } else {
-        $response = $response->withRedirect('/login', 302);
+        $response = $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
     }
 
     return $response;
@@ -49,14 +58,14 @@ $recognize = function ($request, $response, $next) {
 
 #### Route handlers
 
-$app->get('/login', function ($request, $response, $args) {
-    if ($username = $this->session->get('username', false)) {
-        return $response->withRedirect('/user/' . $username, 302);
+$app->get('/login', function ($request, $response) {
+    if ($username = $this->session->get('user.username', false)) {
+        return $response->withRedirect('/users/' . $username, 302);
     }
 
-    // Render index view
-    return $this->renderer->render($response, 'login.phtml', $args);
+    return $this->renderer->render($response, 'login.phtml');
 });
+
 $app->post('/login', function ($request, $response, $args) {
 
     /** @var \Slim\Http\Request $request */
@@ -74,10 +83,12 @@ $app->post('/login', function ($request, $response, $args) {
         $user = $um->findByUsername($username);
 
         if (isset($user) && $user instanceof User && md5($password) === $user->password) {
-            $this->session->set('username', $username);
+
+            $this->session->updateWithUserData($user->toAssoc(false));
+
             $data = [
                 'ok' => true,
-                'username' => $username
+                'user' => $user->toAssoc(false)
             ];
             $status = 200;
         } else {
@@ -101,20 +112,40 @@ $app->get('/logout', function ($request, $response, $args) {
 
 $app->get('/admin', function ($request, $response, $args) {
     return $this->renderer->render($response, 'admin.phtml');
-})->add($ensureSession);
+})->add($ensureAdmin)->add($ensureSession);
 
-$app->get('/user/{username}', function ($request, $response, $args) {
+$app->get('/users/{username}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $loggedUser = $request->getAttribute('loggedUser');
 
-    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
-        return $response->withRedirect('/user/' . $loggedUser->username, 302);
+    if ($loggedUser->username !== $args['username'] && !$loggedUser->isAdmin()) {
+//        return $response->withRedirect('/users/' . $loggedUser->username, 302);
+        //TODO: redirect to appropriate html page
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Forbidden'
+        ], 403);
     }
 
     $um = new UserMapper($this->db);
-    $user = $um->findByUsername($args['username']);
+
+    if ($loggedUser->username === $args['username']) {
+        $user = $loggedUser;
+    } else {
+        $user = $um->findByUsername($args['username']);
+    }
+
+    if (!isset($user)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'not found'
+        ], 404);
+    }
 
     // Render index view
-    return $this->renderer->render($response, 'user-profile.phtml', $user->toAssoc());
-})->add($ensureSession)->add($recognize);
+    return $this->renderer->render($response, 'user-profile.phtml', [
+        'user' => $user->toAssoc(false),
+        'loggedUser' => $loggedUser->toAssoc(false)
+    ]);
+})->add($ensureSession);
 

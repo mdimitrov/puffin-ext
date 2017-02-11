@@ -23,7 +23,7 @@ function onSend() {
             }
 
             if (this.status === 200) {
-                window.location.replace('/user/' + response.username);
+                window.location.replace('/users/' + encodeURI(response.user.username));
             } else {
                 errorField.innerHTML = response.message || 'Error';
             }

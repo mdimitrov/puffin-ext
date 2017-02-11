@@ -11,6 +11,7 @@
                 align-items: center;
             }
             .username-wrapper,
+            .fullName-wrapper,
             .email-wrapper {
                 margin-right: 30px;
                 font-size: 23px;
@@ -86,38 +87,46 @@
         <script src="/assets/js/user-profile.js"></script>
     </head>
     <body>
-        <div id="hidden-username" class="hidden"><?= isset($username) ? $username : '' ?></div>
-        <div id="hidden-email" class="hidden"><?= isset($email) ? $email : '' ?></div>
-        <div id="hidden-role" class="hidden"><?= isset($role) ? $role : '' ?></div>
+        <div id="hidden-id" class="hidden"><?= isset($user['id']) ? $user['id'] : '' ?></div>
+        <div id="hidden-username" class="hidden"><?= isset($user['username']) ? $user['username'] : '' ?></div>
+        <div id="hidden-fullName" class="hidden"><?= isset($user['fullName']) ? $user['fullName'] : '' ?></div>
+        <div id="hidden-email" class="hidden"><?= isset($user['email']) ? $user['email'] : '' ?></div>
+        <div id="hidden-role" class="hidden"><?= isset($user['role']) ? $user['role'] : '' ?></div>
         <div id="header-wrapper" class="header-wrapper">
             <div id="username-wrapper" class="username-wrapper"></div>
+            <div id="fullName-wrapper" class="fullName-wrapper"></div>
             <div id="email-wrapper" class="email-wrapper"></div>
             <div id="admin-button-wrapper" class="admin-button-wrapper"></div>
-            <div id="logout-wrapper" class="logout-wrapper">
-                <div class="button logout-button" onclick="onLogoutClick()">Logout</div>
-            </div>
+            <?php if ($loggedUser['id'] === $user['id']) { ?>
+                <div id="logout-wrapper" class="logout-wrapper">
+                    <div class="button logout-button" onclick="onLogoutClick()">Logout</div>
+                </div>
+            <?php }; ?>
+
         </div>
-        <div class="forms-wrapper">
-            <div class="form-wrapper">
-                <div class="form-header">Променете своите данни</div>
-                <div class="input-label">Потребителско име:</div>
-                <input id="form-username" type="text" name="username">
-                <div class="input-label">Email:</div>
-                <input id="form-email" type="text" name="email">
-                <div id="edit-profile-error" class="error"></div>
-                <div class="button" onclick="onEditProfileSend()">Запази</div>
-            </div>
-            <div class="form-wrapper">
-                <div class="form-header">Променете своята парола</div>
-                <div class="input-label">Текуща парола:</div>
-                <input id="old-password" type="password" name="password">
-                <div class="input-label">Нова парола:</div>
-                <input id="new-password" type="password" name="password">
-                <div class="input-label">Потвърди новата парола:</div>
-                <input id="repeat-new-password" type="password" name="password">
-                <div id="change-password-error" class="error"></div>
-                <div class="button" onclick="onChangePasswordSend()">Запази</div>
-            </div>
+        <?php if ($loggedUser['id'] === $user['id'] || $loggedUser['role'] === \Puffin\Model\User::ADMIN_ROLE) { ?>
+            <div class="forms-wrapper">
+                <div class="form-wrapper">
+                    <div class="form-header">Променете <?= $loggedUser['id'] === $user['id'] ? 'своите данни' : 'данните на потребителя' ?></div>
+                    <div class="input-label">Име:</div>
+                    <input id="form-fullName" type="text" name="fullName">
+                    <div class="input-label">Email:</div>
+                    <input id="form-email" type="text" name="email">
+                    <div id="edit-profile-error" class="error"></div>
+                    <div class="button" onclick="onEditProfileSend()">Запази</div>
+                </div>
+                <div class="form-wrapper">
+                    <div class="form-header">Променете <?= $loggedUser['id'] === $user['id'] ? 'своята парола' : 'паролата на потребителя' ?></div>
+                    <div class="input-label">Текуща парола:</div>
+                    <input id="old-password" type="password" name="password">
+                    <div class="input-label">Нова парола:</div>
+                    <input id="new-password" type="password" name="password">
+                    <div class="input-label">Потвърди новата парола:</div>
+                    <input id="repeat-new-password" type="password" name="password">
+                    <div id="change-password-error" class="error"></div>
+                    <div class="button" onclick="onChangePasswordSend()">Запази</div>
+                </div>
+            <?php }; ?>
         </div>
     </body>
 </html>

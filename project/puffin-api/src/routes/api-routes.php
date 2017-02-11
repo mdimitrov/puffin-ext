@@ -13,12 +13,17 @@ use Puffin\Model\Mapper\UserMapper;
  * @return \Slim\Http\Response
  */
 $ensureSession = function ($request, $response, $next) {
-    $username = $this->session->get('username', null);
+    $um = new UserMapper($this->db);
+    $user = $um->findById($this->session->get('user.id'));
 
-    if (isset($username)) {
+    if (isset($user)) {
+        $request = $request->withAttribute('loggedUser', $user);
         $response = $next($request, $response);
     } else {
-        $response = $response->withJson(['ok' => false], 403);
+        $response = $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
     }
 
     return $response;
@@ -31,17 +36,17 @@ $ensureSession = function ($request, $response, $next) {
  *
  * @return \Slim\Http\Response
  */
-$recognize = function ($request, $response, $next) {
-    $sessUsername = $this->session->get('username');
+$ensureAdmin = function ($request, $response, $next) {
+    /** @var User $loggedUser */
+    $loggedUser = $request->getAttribute('loggedUser');
 
-    $um = new UserMapper($this->db);
-    $user = $um->findByUsername($sessUsername);
-
-    if (isset($user)) {
-        $request = $request->withAttribute('loggedUser', $user);
+    if (isset($loggedUser) && $loggedUser->isAdmin()) {
         $response = $next($request, $response);
     } else {
-        $response = $response->withRedirect('/login', 302);
+        $response = $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
     }
 
     return $response;
@@ -49,69 +54,94 @@ $recognize = function ($request, $response, $next) {
 
 #### Route handlers
 
-$app->get('/api/user/{username}', function ($request, $response, $args) {
-    /** @var $response \Slim\Http\Response */
-    return $response->withJson([], 200);
-})->add($ensureSession);
-$app->put('/api/user/{username}', function ($request, $response, $args) {
-    $loggedUser = $request->getAttribute('loggedUser');
-    $userId = $loggedUser->id;
+/**
+ * returns user by id
+ */
+$app->get('/api/users/{userId}', function ($request, $response, $args) {
+    $um = new UserMapper($this->db);
+    $user = $um->findById($args['userId']);
 
-    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
+    if (!isset($user) || !$user || !($user instanceof User)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'not found'
+        ], 404);
+    }
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true,
+        'data' =>  $user->toAssoc(false)
+    ], 200);
+})->add($ensureAdmin)->add($ensureSession);
+
+
+$getUpdateActionFromBody =  function ($body) {
+    if (!array_key_exists('action', $body) || !isset($body['action'])) {
+        return null;
+    }
+
+    switch ($body['action']) {
+        case 'updatePassword':
+            $action = 'updatePassword';
+            break;
+        case 'updateInfo':
+            $action = 'updateInfo';
+            break;
+        case 'updateRole':
+            $action = 'updateRole';
+            break;
+        default:
+            $action = null;
+    }
+
+    return $action;
+};
+
+$app->put('/api/users/{userId}', function ($request, $response, $args) use ($getUpdateActionFromBody) {
+    /** @var User $loggedUser */
+    $userId = $args['userId'];
+    $loggedUser = $request->getAttribute('loggedUser');
+
+    if ($loggedUser->id !== $userId && !$loggedUser->isAdmin()) {
         return $response->withJson([
             'ok' => false,
             'message' => 'Action is not permitted'
         ], 403);
     }
 
-    $username = $request->getParam('username');
-    $email = $request->getParam('email');
-
     $um = new UserMapper($this->db);
-    $um->updateInfo($userId, $username, $email);
-    $this->session->set('username', $username);
 
-    $data = [
-        'ok' => true,
-        'username' => $username,
-        'email' => $email
-    ];
-    $status = 200;
-    /** @var $response \Slim\Http\Response */
-    return $response->withJson($data, $status);
-})->add($ensureSession)->add($recognize);
-$app->put('/api/user/{username}/password', function ($request, $response, $args) {
-    $loggedUser = $request->getAttribute('loggedUser');
-    $userId = $loggedUser->id;
-
-    if ($loggedUser->username !== $args['username'] && $loggedUser->role !== 'admin') {
-        return $response->withJson([ 'ok' => false ], 403);
-    }
-
-    $oldPassword = $request->getParam('oldPassword');
-    $newPassword = $request->getParam('newPassword');
-
-    if (md5($oldPassword) === $loggedUser->password) {
-        $um = new UserMapper($this->db);
-        $um->updatePassword($userId, $newPassword);
-
-        $data = [
-            'ok' => true,
-            'message' => 'Success'
-        ];
-        $status = 200;
+    if ($loggedUser->id === $userId) {
+        $user = $loggedUser;
     } else {
-        $data = [
-            'ok' => false,
-            'message' => 'Incorrect password'
-        ];
-        $status = 400;
+        $user = $um->findById($userId);
     }
-    /** @var $response \Slim\Http\Response */
-    return $response->withJson($data, $status);
-})->add($ensureSession)->add($recognize);
 
-$app->put('/api/admin/role', function ($request, $response, $args) {
+    if (!isset($user) || !$user || !($user instanceof User)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'not found'
+        ], 404);
+    }
+
+    /** @var \Slim\Http\Request $request */
+    $updateAction = $getUpdateActionFromBody($request->getParsedBody());
+    $updateData = $request->getParam('data');
+
+    if (isset($updateData) && method_exists($um, $updateAction)) {
+        $result = $um->{$updateAction}($userId, $updateData);
+        $user->setFromAssoc($updateData);
+        if ($loggedUser->id === $userId) {
+            $this->session->updateWithUserData($user->toAssoc(false));
+        }
+    }
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([ 'ok' => true, 'data' => $user->toAssoc(false)], 200);
+})->add($ensureSession);
+
+$app->put('/api/users/{userId}/_changeRole', function ($request, $response, $args) {
     $loggedUser = $request->getAttribute('loggedUser');
     $username = $request->getParam('username');
     $role = $request->getParam('role');
@@ -135,4 +165,4 @@ $app->put('/api/admin/role', function ($request, $response, $args) {
     }
     /** @var $response \Slim\Http\Response */
     return $response->withJson($data, $status);
-})->add($ensureSession)->add($recognize);
+})->add($ensureAdmin)->add($ensureSession);
