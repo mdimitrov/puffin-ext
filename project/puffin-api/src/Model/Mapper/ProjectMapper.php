@@ -1,10 +1,12 @@
 <?php
 namespace Puffin\Model\Mapper;
 
+use Puffin\Model\ModelInterface;
 use Puffin\Model\Project;
 
-class ProjectMapper
+class ProjectMapper implements MapperInterface
 {
+
     /**
      * @var \PDO
      */
@@ -57,7 +59,7 @@ class ProjectMapper
             return null;
         }
 
-        return $this->mapRowToProject($result);
+        return $this->mapRowToObject($result);
     }
 
     /**
@@ -87,7 +89,7 @@ class ProjectMapper
             return [];
         }
 
-        $projects = array_map(function($row) { return $this->mapRowToProject($row); }, $rows);
+        $projects = array_map(function($row) { return $this->mapRowToObject($row); }, $rows);
 
         return $projects;
     }
@@ -110,7 +112,7 @@ class ProjectMapper
             return [];
         }
 
-        $projects = array_map(function($row) { return $this->mapRowToProject($row); }, $rows);
+        $projects = array_map(function($row) { return $this->mapRowToObject($row); }, $rows);
 
         return $projects;
     }
@@ -133,7 +135,7 @@ class ProjectMapper
             return [];
         }
 
-        $projects = array_map(function($row) { return $this->mapRowToProject($row)->toAssoc(); }, $rows);
+        $projects = array_map(function($row) { return $this->mapRowToObject($row)->toAssoc(); }, $rows);
 
         return $projects;
     }
@@ -156,7 +158,7 @@ class ProjectMapper
             return [];
         }
 
-        $projects = array_map(function($row) { return $this->mapRowToProject($row)->toAssoc(); }, $rows);
+        $projects = array_map(function($row) { return $this->mapRowToObject($row)->toAssoc(); }, $rows);
 
         return $projects;
     }
@@ -173,8 +175,13 @@ class ProjectMapper
         return $statement->rowCount();
     }
 
-    private function mapRowToProject(array $row)
+    public function mapRowToObject(array $row)
     {
         return Project::fromState($row);
+    }
+
+    public function save(ModelInterface $model)
+    {
+        // TODO: Implement save() method.
     }
 }

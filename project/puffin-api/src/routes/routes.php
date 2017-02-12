@@ -1,8 +1,9 @@
 <?php
 // Routes
 use Puffin\Helper\Session;
-use \Puffin\Model\User;
+use Puffin\Model\User;
 use Puffin\Model\Mapper\UserMapper;
+use  Puffin\Model\Mapper\PasswordRecoveryCodeMapper;
 
 #### Middleware
 /**
@@ -153,3 +154,30 @@ $app->get('/users/{username}', function ($request, $response, $args) {
     ]);
 })->add($ensureSession);
 
+$app->get('/user/send-password-reset', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'send-password-reset.phtml');
+})->add($ensureSession);
+
+$app->get('/user/reset-password', function ($request, $response, $args) {
+    $userId = $request->getParam('user');
+    $code = $request->getParam('code');
+
+    $prcm = new PasswordRecoveryCodeMapper($this->db);
+    $savedCode = $prcm->findById($userId)->code;
+
+    if (!isset($userId) || !isset($code) || $code !== $savedCode) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Invalid params'
+        ], 400);
+    }
+
+    return $this->renderer->render($response, 'reset-password.phtml', [
+        'userId' => $userId,
+        'code' => $code
+    ]);
+});
+
+$app->get('/user/reset-email-sent', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'reset-email-sent.phtml');
+})->add($ensureSession);

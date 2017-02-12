@@ -7,6 +7,9 @@ use Puffin\Model\Mapper\UserMapper;
 use Puffin\Model\Project;
 use Puffin\Model\Mapper\ProjectMapper;
 
+use Puffin\Model\Mapper\PasswordRecoveryCodeMapper;
+use \Puffin\Model\PasswordRecoveryCode;
+
 #### Middleware
 /**
  * @param  \Slim\Http\Request $request PSR7 request
@@ -58,6 +61,8 @@ $ensureAdmin = function ($request, $response, $next) {
 ########
 #### Users route handlers
 ########
+
+/** search in users */
 $app->get('/api/search/users', function ($request, $response, $args) {
     $query = $request->getParam('q');
     $um = new UserMapper($this->db);
@@ -71,7 +76,7 @@ $app->get('/api/search/users', function ($request, $response, $args) {
 })->add($ensureAdmin)->add($ensureSession);
 
 /**
- * returns user by id
+ * get user by id
  */
 $app->get('/api/users/{userId}', function ($request, $response, $args) {
     $um = new UserMapper($this->db);
@@ -91,6 +96,9 @@ $app->get('/api/users/{userId}', function ($request, $response, $args) {
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
 
+/**
+ * update user data
+ */
 $app->put('/api/users/{userId}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $userId = $args['userId'];
@@ -141,6 +149,9 @@ $app->put('/api/users/{userId}', function ($request, $response, $args) {
     return $response->withJson([ 'ok' => true, 'data' => $user->toAssoc()], 200);
 })->add($ensureSession);
 
+/**
+ * delete user by id
+ */
 $app->delete('/api/users/{userId}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $userId = $args['userId'];
@@ -174,6 +185,9 @@ $app->delete('/api/users/{userId}', function ($request, $response, $args) {
     return $response->withJson([ 'ok' => true], 204);
 })->add($ensureAdmin)->add($ensureSession);
 
+/**
+ * get all users
+ */
 $app->get('/api/users', function ($request, $response, $args) {
     $originalLimit = $request->getParam('limit', 20);
     $limit = $originalLimit + 1;
@@ -196,6 +210,9 @@ $app->get('/api/users', function ($request, $response, $args) {
 #### Projects route handlers
 ########
 
+/**
+ * get all projects
+ */
 $app->get('/api/projects', function ($request, $response, $args) {
     $originalLimit = $request->getParam('limit', 20);
     $limit = $originalLimit + 1;
@@ -214,6 +231,9 @@ $app->get('/api/projects', function ($request, $response, $args) {
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
 
+/**
+ * update project
+ */
 $app->put('/api/projects/{projectId}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $projectId = $args['projectId'];
@@ -240,6 +260,9 @@ $app->put('/api/projects/{projectId}', function ($request, $response, $args) {
     return $response->withJson([ 'ok' => true, 'data' => $project->toAssoc()], 200);
 })->add($ensureAdmin)->add($ensureSession);
 
+/**
+ * search in projects
+ */
 $app->get('/api/search/projects', function ($request, $response, $args) {
     $query = $request->getParam('q');
     $pm = new ProjectMapper($this->db);
@@ -251,3 +274,75 @@ $app->get('/api/search/projects', function ($request, $response, $args) {
         'data' => $projects
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
+
+#######
+### Forgotten password
+#######
+
+$app->post('/api/users/password-reset', function ($request, $response, $args) {
+    $email = $request->getParam('email');
+
+    if (!$email) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Invalid Params'
+        ], 400);
+    }
+
+    $um = new UserMapper($this->db);
+    $user = $um->findByEmail($email);
+
+    if (!isset($user) || !$user || !($user instanceof User)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Invalid Params'
+        ], 400);
+    }
+
+    $prcm = new PasswordRecoveryCodeMapper($this->db);
+    $code = $prcm->save(new PasswordRecoveryCode($user->id))->code;
+
+    $protocol = array_key_exists('HTTPS', $_SERVER) ? 'https://' : 'http://';
+    $host = $_SERVER['HTTP_HOST'];
+    $recoveryUrl =  $protocol . $host . '/user/reset-password?' . http_build_query([
+        'code' => $code,
+        'user' => $user->id
+    ]);
+
+    // TODO: send email
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true
+    ], 200);
+});
+
+$app->post('/api/users/{userId}/_reset_password', function ($request, $response, $args) {
+    $userId = $args['userId'];
+    $code = $request->getParam('code');
+    $newPassword = $request->getParam('newPassword');
+
+    if (!isset($userId) || !isset($code) || !isset($newPassword)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Invalid params'
+        ], 400);
+    }
+
+    $um = new UserMapper($this->db);
+    $prcm = new PasswordRecoveryCodeMapper($this->db);
+    $savedCode = $prcm->findById($userId)->code;
+
+    if (!$savedCode || $savedCode !== $code) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Invalid params'
+        ], 400);
+    }
+
+    $um->updatePassword($userId, ['newPassword' => $newPassword]);
+
+    return $response->withJson([
+        'ok' => true
+    ], 200);
+});

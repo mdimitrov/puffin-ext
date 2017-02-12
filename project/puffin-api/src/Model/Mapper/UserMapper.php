@@ -1,9 +1,10 @@
 <?php
 namespace Puffin\Model\Mapper;
 
+use Puffin\Model\ModelInterface;
 use \Puffin\Model\User;
 
-class UserMapper
+class UserMapper implements MapperInterface
 {
     /**
      * @var \PDO
@@ -56,7 +57,7 @@ class UserMapper
             return null;
         }
 
-        return $this->mapRowToUser($result);
+        return $this->mapRowToObject($result);
     }
 
     /**
@@ -83,7 +84,34 @@ class UserMapper
             return null;
         }
 
-        return $this->mapRowToUser($result);
+        return $this->mapRowToObject($result);
+    }
+
+    /**
+     * @param $email
+     * @return User
+     */
+    public function findByEmail($email) {
+
+        if (!isset($email)) {
+            return null;
+        }
+
+        $select = self::USER_SELECT;
+        $sql = "
+            $select
+            WHERE email=:email
+            LIMIT 1;
+        ";
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['email' => $email]);
+        $result = $statement->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            return null;
+        }
+
+        return $this->mapRowToObject($result);
     }
 
     /**
@@ -104,7 +132,7 @@ class UserMapper
             return [];
         }
 
-        $users = array_map(function($row) { return $this->mapRowToUser($row); }, $rows);
+        $users = array_map(function($row) { return $this->mapRowToObject($row); }, $rows);
 
         return $users;
     }
@@ -129,7 +157,7 @@ class UserMapper
             return [];
         }
 
-        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToUser($row)->toAssoc($withPassword); }, $rows);
+        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToObject($row)->toAssoc($withPassword); }, $rows);
 
         return $users;
     }
@@ -154,7 +182,7 @@ class UserMapper
             return [];
         }
 
-        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToUser($row)->toAssoc($withPassword); }, $rows);
+        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToObject($row)->toAssoc($withPassword); }, $rows);
 
         return $users;
     }
@@ -208,17 +236,17 @@ class UserMapper
     }
 
     /**
-     * @param User $user
+     * @param ModelInterface $model
      *
      * @return User
      */
-    public function save($user) {
-        $userData = $user->toAssoc();
+    public function save(ModelInterface $model) {
+        $userData = $model->toAssoc();
 
         $sql = '
         INSERT INTO user (id, username, full_name, email, password, theme_id, num_of_changes, role)
         VALUES (:id, :username, :fullName, :email, MD5(:password), :topic, :numOfChanges, :role)
-        ON DUBLICATE KEY UPDATE
+        ON DUPLICATE KEY UPDATE
             id=VALUES(id),
             username=VALUES(username),
             full_name=VALUES(full_name),
@@ -233,10 +261,10 @@ class UserMapper
 
         $userData['id'] = $this->pdo->lastInsertId();
 
-        return $this->mapRowToUser($userData);
+        return $this->mapRowToObject($userData);
     }
 
-    private function mapRowToUser(array $row)
+    public function mapRowToObject(array $row)
     {
         return User::fromState($row);
     }

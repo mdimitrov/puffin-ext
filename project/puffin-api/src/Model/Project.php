@@ -1,7 +1,7 @@
 <?php
 namespace Puffin\Model;
 
-class Project
+class Project implements ModelInterface
 {
 
     /**

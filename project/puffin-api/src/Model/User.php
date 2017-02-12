@@ -1,7 +1,7 @@
 <?php
 namespace Puffin\Model;
 
-class User
+class User implements ModelInterface
 {
 
     /**
