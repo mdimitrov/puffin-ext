@@ -27,5 +27,40 @@ return [
             'secure' => false,
             'httponly' => false
         ],
+
+        'mailer' => [
+            'smtp' => [
+              'host' => 'smtp.gmail.com',
+              'auth' => true,
+              'username' => 'username@gmail.com',
+              'password' => 'tainaparola',
+              'secure' => 'tls',
+              'port' => 587
+            ],
+
+            'emails' => [
+                'password_recovery' => [
+                    'subject' => 'Password reset request',
+                    'body' => function($resetUrl) { return "
+<html>
+<body>
+<p>Hello,</p>
+<p>There was a request to change the password for your Puffin account</p>
+<p>If you did not initiate this request, please ignore this message.</p> <p>Otherwise, click <a class=\"moz-txt-link-freetext\" href=\"$resetUrl\">this</a>
+link, or copy/paste the following line in a browser:</p> <p><a class=\"moz-txt-link-freetext\" href=\"$resetUrl\">$resetUrl</a></p>
+</body>
+</html>";
+                    },
+                    'from' => [
+                        'address' => 'address@gmail.com',
+                        'name' => 'Puffin',
+                    ],
+                    'reply_to' => [
+                        'address' => 'address+info@gmail.com',
+                        'name' => 'Puffin Info',
+                    ],
+                ],
+            ],
+        ],
     ],
 ];

@@ -309,7 +309,24 @@ $app->post('/api/users/password-reset', function ($request, $response, $args) {
         'user' => $user->id
     ]);
 
-    // TODO: send email
+    /** @var PHPMailer $mail */
+    $mail = $this->mailer;
+    $emailConfig = $this->settings['mailer']['emails']['password_recovery'];
+
+    $mail->setFrom($emailConfig['from']['address'], $emailConfig['from']['name']);
+    $mail->addAddress($email, $user->fullName);
+    $mail->addReplyTo($emailConfig['reply_to']['address'], $emailConfig['reply_to']['name']);
+    $mail->isHTML(true);
+
+    $mail->Subject = $emailConfig['subject'];
+    $mail->Body    = $emailConfig['body']($recoveryUrl);
+
+    if(!$mail->send()) {
+        echo 'Message could not be sent.';
+        echo 'Mailer Error: ' . $mail->ErrorInfo;
+    } else {
+        echo 'Message has been sent';
+    }
 
     /** @var $response \Slim\Http\Response */
     return $response->withJson([
