@@ -13,7 +13,7 @@ $container['renderer'] = function ($c) {
 $container['db'] = function ($c) {
     $db = $c['settings']['db'];
     $pdo = new PDO(
-        "mysql:host={$db['host']};port={$db['port']};dbname={$db['dbname']}",
+        "mysql:host={$db['host']};port={$db['port']};dbname={$db['dbname']};charset=utf8",
         $db['user'],
         $db['pass']
     );

@@ -89,7 +89,7 @@ class User
         );
     }
 
-    public function toAssoc($withPassword = true) {
+    public function toAssoc($withPassword = false) {
         $result = [
             'id' => $this->id,
             'username' => $this->username,

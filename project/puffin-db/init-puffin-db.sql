@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.1.20-MariaDB-1~jessie)
 # Database: puffin
-# Generation Time: 2017-02-11 20:13:59 +0000
+# Generation Time: 2017-02-12 08:40:40 +0000
 # ************************************************************
 
 
@@ -35,6 +35,17 @@ CREATE TABLE `comments` (
   UNIQUE KEY `referat_id` (`referat_id`,`element_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `comments` WRITE;
+/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+
+INSERT INTO `comments` (`id`, `referat_id`, `element_id`, `comment`, `user_id`)
+VALUES
+	(1,'81051_1_5',37,'във -> в',9999),
+	(2,'80922_1_19',27,'Time to get the idea, and then give it to others! :-)',9999),
+	(3,'81011_2_71',24,'[MP] Изглежда да работи кирилицата?!',-1);
+
+/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table projects
@@ -43,15 +54,28 @@ CREATE TABLE `comments` (
 DROP TABLE IF EXISTS `projects`;
 
 CREATE TABLE `projects` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) NOT NULL,
-  `version` bigint(20) NOT NULL,
+  `id` int(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(20) unsigned NOT NULL,
+  `version` int(20) NOT NULL,
   `comment` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `theme` bigint(20) NOT NULL,
+  `theme` int(20) unsigned NOT NULL,
   `uploaded` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `status` varchar(16) DEFAULT 'unlocked',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `projects` WRITE;
+/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
+
+INSERT INTO `projects` (`id`, `user_id`, `version`, `comment`, `theme`, `uploaded`, `status`)
+VALUES
+	(28,1,1,'Първоначална версия. Не са коригирани датите.',128,'2016-11-10 18:43:53','unlocked'),
+	(29,2,1,'nz версия',129,'2017-02-11 21:18:47','unlocked');
+
+/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table scores
@@ -69,6 +93,15 @@ CREATE TABLE `scores` (
   UNIQUE KEY `referat_id` (`referat_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `scores` WRITE;
+/*!40000 ALTER TABLE `scores` DISABLE KEYS */;
+
+INSERT INTO `scores` (`id`, `referat_id`, `score`, `comment`, `user_id`)
+VALUES
+	(1,'81081_1_37',9,'Много ми харесва страницата като структуриране и съдържание! Забележките са минимални и то във външния вид, така да се каже - леки козметични недостатъци.',80846);
+
+/*!40000 ALTER TABLE `scores` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table user
@@ -89,6 +122,16 @@ CREATE TABLE `user` (
   KEY `by_username_id` (`username`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+
+INSERT INTO `user` (`id`, `username`, `password`, `email`, `theme_id`, `num_of_changes`, `role`, `full_name`)
+VALUES
+	(1,'mihael','4297f44b13955235245b2497399d7a93','mihael.dimitroff@gmail.com',128,0,'admin','Mihael Dimitrov'),
+	(2,'atanas','4297f44b13955235245b2497399d7a93','atanas.yancevski@gmail.com',128,0,'user','Atanas');
+
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 

@@ -1,8 +1,11 @@
 <?php
 // Api Endpoints
 
-use \Puffin\Model\User;
+use Puffin\Model\User;
 use Puffin\Model\Mapper\UserMapper;
+
+use Puffin\Model\Project;
+use Puffin\Model\Mapper\ProjectMapper;
 
 #### Middleware
 /**
@@ -52,8 +55,9 @@ $ensureAdmin = function ($request, $response, $next) {
     return $response;
 };
 
-#### Route handlers
-
+########
+#### Users route handlers
+########
 /**
  * returns user by id
  */
@@ -71,34 +75,11 @@ $app->get('/api/users/{userId}', function ($request, $response, $args) {
     /** @var $response \Slim\Http\Response */
     return $response->withJson([
         'ok' => true,
-        'data' =>  $user->toAssoc(false)
+        'data' =>  $user->toAssoc()
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
 
-
-$getUpdateActionFromBody =  function ($body) {
-    if (!array_key_exists('action', $body) || !isset($body['action'])) {
-        return null;
-    }
-
-    switch ($body['action']) {
-        case 'updatePassword':
-            $action = 'updatePassword';
-            break;
-        case 'updateInfo':
-            $action = 'updateInfo';
-            break;
-        case 'updateRole':
-            $action = 'updateRole';
-            break;
-        default:
-            $action = null;
-    }
-
-    return $action;
-};
-
-$app->put('/api/users/{userId}', function ($request, $response, $args) use ($getUpdateActionFromBody) {
+$app->put('/api/users/{userId}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $userId = $args['userId'];
     $loggedUser = $request->getAttribute('loggedUser');
@@ -106,7 +87,7 @@ $app->put('/api/users/{userId}', function ($request, $response, $args) use ($get
     if ($loggedUser->id !== $userId && !$loggedUser->isAdmin()) {
         return $response->withJson([
             'ok' => false,
-            'message' => 'Action is not permitted'
+            'message' => 'Access Denied'
         ], 403);
     }
 
@@ -126,43 +107,96 @@ $app->put('/api/users/{userId}', function ($request, $response, $args) use ($get
     }
 
     /** @var \Slim\Http\Request $request */
-    $updateAction = $getUpdateActionFromBody($request->getParsedBody());
+    $updateAction = $request->getParam('action');
     $updateData = $request->getParam('data');
 
+    if ($updateAction === 'updateRole' && !$loggedUser->isAdmin()) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
+    }
+
     if (isset($updateData) && method_exists($um, $updateAction)) {
-        $result = $um->{$updateAction}($userId, $updateData);
+        $um->{$updateAction}($userId, $updateData);
         $user->setFromAssoc($updateData);
         if ($loggedUser->id === $userId) {
-            $this->session->updateWithUserData($user->toAssoc(false));
+            $this->session->updateWithUserData($user->toAssoc());
         }
     }
 
     /** @var $response \Slim\Http\Response */
-    return $response->withJson([ 'ok' => true, 'data' => $user->toAssoc(false)], 200);
+    return $response->withJson([ 'ok' => true, 'data' => $user->toAssoc()], 200);
 })->add($ensureSession);
 
-$app->put('/api/users/{userId}/_changeRole', function ($request, $response, $args) {
+$app->delete('/api/users/{userId}', function ($request, $response, $args) {
+    /** @var User $loggedUser */
+    $userId = $args['userId'];
     $loggedUser = $request->getAttribute('loggedUser');
-    $username = $request->getParam('username');
-    $role = $request->getParam('role');
 
-    if ($loggedUser->role === 'admin') {
-        $um = new UserMapper($this->db);
-        $user = $um->findByUsername($username);
-        $um->updateRole($user->id, $role);
-
-        $data = [
-            'ok' => true,
-            'message' => 'Success'
-        ];
-        $status = 200;
-    } else {
-        $data = [
+    if ($loggedUser->id !== $userId && !$loggedUser->isAdmin()) {
+        return $response->withJson([
             'ok' => false,
-            'message' => 'Unauthorized'
-        ];
-        $status = 403;
+            'message' => 'Access Denied'
+        ], 403);
     }
+
+    $um = new UserMapper($this->db);
+
+    if ($loggedUser->id === $userId) {
+        $user = $loggedUser;
+    } else {
+        $user = $um->findById($userId);
+    }
+
+    if (!isset($user) || !$user || !($user instanceof User)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'not found'
+        ], 404);
+    }
+
+    $um->delete($user->id);
+
     /** @var $response \Slim\Http\Response */
-    return $response->withJson($data, $status);
+    return $response->withJson([ 'ok' => true], 204);
+})->add($ensureAdmin)->add($ensureSession);
+
+$app->get('/api/users', function ($request, $response, $args) {
+    $originalLimit = $request->getParam('limit', 20);
+    $limit = $originalLimit + 1;
+    $skip = $request->getParam('skip', 0);
+    $um = new UserMapper($this->db);
+    $users = $um->findAllAssoc(false, $limit, $skip);
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true,
+        'data' =>  array_slice($users, 0, $originalLimit),
+        'pagination' => [
+            'hasMore' => count($users) > $originalLimit
+        ]
+    ], 200);
+})->add($ensureAdmin)->add($ensureSession);
+
+########
+#### Projects route handlers
+########
+
+$app->get('/api/projects', function ($request, $response, $args) {
+    $originalLimit = $request->getParam('limit', 20);
+    $limit = $originalLimit + 1;
+    $skip = $request->getParam('skip', 0);
+
+    $pm = new ProjectMapper($this->db);
+    $projects = $pm->findAllAssoc($limit, $skip);
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true,
+        'data' =>  array_slice($projects, 0, $originalLimit),
+        'pagination' => [
+            'hasMore' => count($projects) > $originalLimit
+        ]
+    ], 200);
 })->add($ensureAdmin)->add($ensureSession);

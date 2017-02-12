@@ -110,8 +110,8 @@ $app->get('/logout', function ($request, $response, $args) {
     return $response->withRedirect('/login', 302);
 });
 
-$app->get('/admin', function ($request, $response, $args) {
-    return $this->renderer->render($response, 'admin.phtml');
+$app->get('/admin/projects', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'admin-projects.phtml');
 })->add($ensureAdmin)->add($ensureSession);
 
 $app->get('/users/{username}', function ($request, $response, $args) {

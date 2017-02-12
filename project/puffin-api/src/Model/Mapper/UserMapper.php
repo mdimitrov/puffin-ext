@@ -87,11 +87,16 @@ class UserMapper
     }
 
     /**
+     * @param int $limit
+     * @param int $skip
+     * @param string $direction
      * @return array
      */
-    public function findAll() {
-        $sql = self::USER_SELECT;
+    public function findAll($limit = 20, $skip = 0, $direction = 'DESC') {
+        $sql = self::USER_SELECT . " ORDER BY username $direction LIMIT :skip , :limit;";
         $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+        $statement->bindValue(':skip', (int) $skip, \PDO::PARAM_INT);
         $statement->execute();
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -105,11 +110,18 @@ class UserMapper
     }
 
     /**
+     * @param boolean $withPassword
+     * @param int $limit
+     * @param int $skip
+     * @param string $direction
      * @return array
      */
-    public function findAllAssoc() {
-        $sql = self::USER_SELECT;
+    public function findAllAssoc($withPassword = false, $limit = 20, $skip = 0, $direction = 'DESC') {
+        $sql = self::USER_SELECT . " ORDER BY username $direction LIMIT :skip , :limit;";
         $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+        $statement->bindValue(':skip', (int) $skip, \PDO::PARAM_INT);
+
         $statement->execute();
         $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -117,7 +129,7 @@ class UserMapper
             return [];
         }
 
-        $users = array_map(function($row) { return $this->mapRowToUser($row)->toAssoc(); }, $rows);
+        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToUser($row)->toAssoc($withPassword); }, $rows);
 
         return $users;
     }
@@ -154,6 +166,17 @@ class UserMapper
         ];
 
         $sql = 'UPDATE user SET role=:role WHERE id=:id';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
+        return $statement->rowCount();
+    }
+
+    public function delete($userId) {
+        $userData = [
+            'id' => $userId
+        ];
+
+        $sql = 'DELETE FROM user WHERE id=:id';
         $statement = $this->pdo->prepare($sql);
         $statement->execute($userData);
         return $statement->rowCount();
