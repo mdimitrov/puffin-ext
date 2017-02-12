@@ -134,6 +134,31 @@ class UserMapper
         return $users;
     }
 
+    /**
+     * @param boolean $withPassword
+     * @param $query
+     * @return array
+     */
+    public function findAllSearchAssoc($withPassword = false, $query) {
+        $sql = self::USER_SELECT . " 
+        WHERE username LIKE :query  
+        OR full_name LIKE :query 
+        OR email LIKE :query  
+        OR role LIKE :query 
+        ORDER BY username DESC";
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['query' => "%$query%"]);
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!count($rows)) {
+            return [];
+        }
+
+        $users = array_map(function($row) use ($withPassword) { return $this->mapRowToUser($row)->toAssoc($withPassword); }, $rows);
+
+        return $users;
+    }
+
     public function updatePassword($userId, $data) {
         $userData = [
             'id' => $userId,

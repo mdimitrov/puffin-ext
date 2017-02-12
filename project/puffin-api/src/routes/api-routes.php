@@ -58,6 +58,18 @@ $ensureAdmin = function ($request, $response, $next) {
 ########
 #### Users route handlers
 ########
+$app->get('/api/search/users', function ($request, $response, $args) {
+    $query = $request->getParam('q');
+    $um = new UserMapper($this->db);
+    $users = $um->findAllSearchAssoc(false, $query);
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true,
+        'data' => $users
+    ], 200);
+})->add($ensureAdmin)->add($ensureSession);
+
 /**
  * returns user by id
  */
@@ -179,6 +191,7 @@ $app->get('/api/users', function ($request, $response, $args) {
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
 
+
 ########
 #### Projects route handlers
 ########
@@ -225,4 +238,16 @@ $app->put('/api/projects/{projectId}', function ($request, $response, $args) {
 
     /** @var $response \Slim\Http\Response */
     return $response->withJson([ 'ok' => true, 'data' => $project->toAssoc()], 200);
+})->add($ensureAdmin)->add($ensureSession);
+
+$app->get('/api/search/projects', function ($request, $response, $args) {
+    $query = $request->getParam('q');
+    $pm = new ProjectMapper($this->db);
+    $projects = $pm->findAllSearchAssoc($query);
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([
+        'ok' => true,
+        'data' => $projects
+    ], 200);
 })->add($ensureAdmin)->add($ensureSession);

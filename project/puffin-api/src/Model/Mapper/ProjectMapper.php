@@ -138,6 +138,30 @@ class ProjectMapper
         return $projects;
     }
 
+    /**
+     * @param $query
+     * @return array
+     */
+    public function findAllSearchAssoc($query) {
+        $sql = self::PROJECT_SELECT . " 
+        WHERE username LIKE :query  
+        OR u.full_name LIKE :query 
+        OR theme LIKE :query 
+        ORDER BY username DESC";
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute(['query' => "%$query%"]);
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!count($rows)) {
+            return [];
+        }
+
+        $projects = array_map(function($row) { return $this->mapRowToProject($row)->toAssoc(); }, $rows);
+
+        return $projects;
+    }
+
+
     public function updateStatus($projectId, $data) {
         $projectData = [
             'id' => $projectId,
