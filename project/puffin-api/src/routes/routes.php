@@ -114,6 +114,10 @@ $app->get('/admin/projects', function ($request, $response, $args) {
     return $this->renderer->render($response, 'admin-projects.phtml');
 })->add($ensureAdmin)->add($ensureSession);
 
+$app->get('/admin/users', function ($request, $response, $args) {
+    return $this->renderer->render($response, 'admin-users.phtml');
+})->add($ensureAdmin)->add($ensureSession);
+
 $app->get('/users/{username}', function ($request, $response, $args) {
     /** @var User $loggedUser */
     $loggedUser = $request->getAttribute('loggedUser');

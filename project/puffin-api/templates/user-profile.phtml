@@ -83,6 +83,11 @@
             .hidden {
                 display: none;
             }
+            .buttons-wrapper {
+                display: flex;
+                align-items: center;
+                margin-left: 50px;
+            }
         </style>
         <script src="/assets/js/user-profile.js"></script>
     </head>
@@ -96,13 +101,14 @@
             <div id="username-wrapper" class="username-wrapper"></div>
             <div id="fullName-wrapper" class="fullName-wrapper"></div>
             <div id="email-wrapper" class="email-wrapper"></div>
+        </div>
+        <div class="buttons-wrapper">
             <div id="admin-button-wrapper" class="admin-button-wrapper"></div>
             <?php if ($loggedUser['id'] === $user['id']) { ?>
                 <div id="logout-wrapper" class="logout-wrapper">
                     <div class="button logout-button" onclick="onLogoutClick()">Logout</div>
                 </div>
             <?php }; ?>
-
         </div>
         <?php if ($loggedUser['id'] === $user['id'] || $loggedUser['role'] === \Puffin\Model\User::ADMIN_ROLE) { ?>
             <div class="forms-wrapper">

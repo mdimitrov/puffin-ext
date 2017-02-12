@@ -12,7 +12,7 @@ class ProjectMapper
 
     const PROJECT_SELECT = '
         SELECT
-          p.id,
+          p.id as id,
           u.username as username,
           u.full_name as fullName,
           version,
@@ -47,7 +47,7 @@ class ProjectMapper
         $select = self::PROJECT_SELECT;
         $sql = "
             $select
-            WHERE id=:id
+            WHERE p.id=:id
         ";
         $statement = $this->pdo->prepare($sql);
         $statement->execute(['id' => $id]);
@@ -138,10 +138,14 @@ class ProjectMapper
         return $projects;
     }
 
-    public function updateStatus($userId, $status) {
+    public function updateStatus($projectId, $data) {
+        $projectData = [
+            'id' => $projectId,
+            'status' => $data['status']
+        ];
         $sql = 'UPDATE projects SET status=:status WHERE id=:id';
         $statement = $this->pdo->prepare($sql);
-        $statement->execute(['status' => $status]);
+        $statement->execute($projectData);
         return $statement->rowCount();
     }
 

@@ -200,3 +200,29 @@ $app->get('/api/projects', function ($request, $response, $args) {
         ]
     ], 200);
 })->add($ensureAdmin)->add($ensureSession);
+
+$app->put('/api/projects/{projectId}', function ($request, $response, $args) {
+    /** @var User $loggedUser */
+    $projectId = $args['projectId'];
+    $pm = new ProjectMapper($this->db);
+    $project = $pm->findById($projectId);
+
+    if (!isset($project) || !$project || !($project instanceof Project)) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'not found'
+        ], 404);
+    }
+
+    /** @var \Slim\Http\Request $request */
+    $updateAction = $request->getParam('action');
+    $updateData = $request->getParam('data');
+
+    if (isset($updateData) && method_exists($pm, $updateAction)) {
+        $pm->{$updateAction}($projectId, $updateData);
+        $project->setFromAssoc($updateData);
+    }
+
+    /** @var $response \Slim\Http\Response */
+    return $response->withJson([ 'ok' => true, 'data' => $project->toAssoc()], 200);
+})->add($ensureAdmin)->add($ensureSession);

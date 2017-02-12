@@ -11,7 +11,7 @@ function onPageLoad() {
 
         if (role === 'admin') {
             const adminButton = document.createElement('A');
-            adminButton.href = '/admin';
+            adminButton.href = '/admin/projects';
             adminButton.className = 'button admin-button';
             adminButton.innerHTML = 'Go to admin panel';
             document.getElementById('admin-button-wrapper').appendChild(adminButton);
