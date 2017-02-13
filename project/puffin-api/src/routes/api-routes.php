@@ -22,7 +22,7 @@ $ensureSession = function ($request, $response, $next) {
     $um = new UserMapper($this->db);
     $user = $um->findById($this->session->get('user.id'));
 
-    if (isset($user)) {
+    if (isset($user) && !$user->isBlocked) {
         $request = $request->withAttribute('loggedUser', $user);
         $response = $next($request, $response);
     } else {

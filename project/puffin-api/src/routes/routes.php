@@ -17,14 +17,20 @@ $ensureSession = function ($request, $response, $next) {
     $um = new UserMapper($this->db);
     $user = $um->findById($this->session->get('user.id'));
 
-    if (isset($user)) {
+    if (isset($user) && $user && !$user->isBlocked) {
         $request = $request->withAttribute('loggedUser', $user);
         $response = $next($request, $response);
     } elseif ($request->isGet()) {
+        if ($user && $user->isBlocked) {
+            Session::destroy();
+        }
         // if the request is get redirect the user to login page
         // important! this is only for the html returning routes
         $response = $response->withRedirect('/login', 302);
     } else {
+        if ($user && $user->isBlocked) {
+            Session::destroy();
+        }
         $response = $response->withJson([
             'ok' => false,
             'message' => 'Access Denied'
@@ -60,7 +66,9 @@ $ensureAdmin = function ($request, $response, $next) {
 #### Route handlers
 
 $app->get('/login', function ($request, $response) {
-    if ($username = $this->session->get('user.username', false)) {
+    $isBlocked = $this->session->get('user.isBlocked', false);
+    $username = $this->session->get('user.username', false);
+    if ($username && !$isBlocked) {
         return $response->withRedirect('/users/' . $username, 302);
     }
 
@@ -83,7 +91,7 @@ $app->post('/login', function ($request, $response, $args) {
         $um = new UserMapper($this->db);
         $user = $um->findByUsername($username);
 
-        if (isset($user) && $user instanceof User && md5($password) === $user->password) {
+        if (isset($user) && $user instanceof User && md5($password) === $user->password && !$user->isBlocked) {
 
             $this->session->updateWithUserData($user->toAssoc(false));
 
@@ -92,6 +100,12 @@ $app->post('/login', function ($request, $response, $args) {
                 'user' => $user->toAssoc(false)
             ];
             $status = 200;
+        } elseif ($user && $user->isBlocked) {
+            $data = [
+                'ok' => false,
+                'message' => 'You are blocked!'
+            ];
+            $status = 401;
         } else {
             $data = [
                 'ok' => false,
