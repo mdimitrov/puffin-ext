@@ -19,6 +19,7 @@ function constructTableRow(data, index) {
     const cell6 = row.insertCell(5);
     const cell7 = row.insertCell(6);
     const cell8 = row.insertCell(7);
+    const cell9 = row.insertCell(8);
 
     const id = data.id;
 
@@ -36,6 +37,9 @@ function constructTableRow(data, index) {
     cell7.id = 'user-status-button-' + id;
     cell8.innerHTML = '<div class="button role ' + data.role + '" onclick=onPromoteClick(' + id + ')>' + roleToButtonStringMapping[data.role] + '</div>';
     cell8.id = 'user-role-button-' + id;
+    cell9.id = 'email-reset-' + id;
+    cell9.setAttribute('email', data.email);
+    cell9.innerHTML = '<div class="button reset" onclick=onResetPasswordClick(' + id + ')>Рестартирай парола</div>';
 }
 
 function onPageLoad() {
@@ -122,6 +126,31 @@ function onPromoteClick(id) {
     xhttp.open('PUT', '/api/users/' + id, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ action: 'updateRole', data: { role: newRole } }));
+}
+
+function onResetPasswordClick(id) {
+    const email = document.getElementById('email-reset-' + id).getAttribute('email');
+    const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            var response = {};
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch (e) {
+                return;
+            }
+
+            if (this.status === 200) {
+            } else {
+            }
+        }
+    };
+
+    xhttp.open('POST', '/api/users/password-reset', true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify({ email }));
 }
 
 window.onload = onPageLoad;
