@@ -228,10 +228,10 @@ class UserMapper implements MapperInterface
     public function updateBlocked($userId, $data) {
         $userData = [
             'id' => $userId,
-            'is_blocked' => $data['blocked']
+            'isBlocked' => $data['isBlocked']
         ];
 
-        $sql = 'UPDATE user SET is_blocked=:is_blocked WHERE id=:id';
+        $sql = 'UPDATE user SET is_blocked=:isBlocked WHERE id=:id';
         $statement = $this->pdo->prepare($sql);
         $statement->execute($userData);
         return $statement->rowCount();

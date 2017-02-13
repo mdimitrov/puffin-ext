@@ -90,7 +90,7 @@ function onBlockClick(id) {
 
     xhttp.open('PUT', '/api/users/' + id, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify({ action: 'updateBlocked', data: { blocked: newStatus } }));
+    xhttp.send(JSON.stringify({ action: 'updateBlocked', data: { isBlocked: newStatus } }));
 }
 
 function onPromoteClick(id) {

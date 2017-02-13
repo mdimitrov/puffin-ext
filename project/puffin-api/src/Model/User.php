@@ -78,7 +78,7 @@ class User implements ModelInterface
         if (isset($data['role'])) {
             $this->role = $data['role'];
         }
-        if (isset($data['isBlicked'])) {
+        if (isset($data['isBlocked'])) {
             $this->isBlocked = $data['isBlocked'];
         }
     }
@@ -94,7 +94,7 @@ class User implements ModelInterface
             $state['topic'],
             $state['numberOfChanges'],
             $state['role'],
-            $state['isBlocked'] === '1'
+            (bool)$state['isBlocked']
         );
     }
 

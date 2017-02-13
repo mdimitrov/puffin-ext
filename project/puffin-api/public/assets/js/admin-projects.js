@@ -79,7 +79,6 @@ function onLockClick(id) {
     xhttp.open('PUT', '/api/projects/' + id, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ action: 'updateStatus', data: { status: newStatus } }));
-    console.log(status);
 }
 
 window.onload = onPageLoad;
