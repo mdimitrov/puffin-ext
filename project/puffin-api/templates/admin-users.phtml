@@ -77,26 +77,32 @@
                 text-align: center;
                 cursor: pointer;
             }
+            .block.button,
+            .role.button.admin {
+                background-color: red;
+                box-shadow: 0px 3px 0px 0px #b3153e;
+            }
+            .role.button.user {
+                background-color: #b7b71d;
+                box-shadow: 0px 3px 0px 0px #5e630d;
+            }
         </style>
-        <script src="/assets/js/admin-projects.js"></script>
+        <script src="/assets/js/admin-users.js"></script>
     </head>
     <body>
         <div class="page-header">Администратор</div>
-        <div class="page-subheader">Проекти</div>
-        <div class="buttons-wrapper">
-            <a href="/admin/users" class="button">Към потребителски панел</a>
-        </div>
+        <div class="page-subheader">Потребители</div>
         <table id="table">
             <thead>
                 <tr>
-                    <th>Тема номер</th>
-                    <th>Качена на</th>
-                    <th>Версия</th>
-                    <th>Последен коментар</th>
                     <th>Потребител</th>
-                    <th>Име на потребител</th>
-                    <th>Статус на проект</th>
-                    <th>Заключи/отключи проект</th>
+                    <th>Име</th>
+                    <th>Email</th>
+                    <th>Проект</th>
+                    <th>Роля</th>
+                    <th>Статус</th>
+                    <th>Блокирай/отблокирай</th>
+                    <th>Направи администратор</th>
                 </tr>
             </thead>
             <tbody id="table-body">

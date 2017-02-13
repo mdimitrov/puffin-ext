@@ -45,6 +45,11 @@ class User implements ModelInterface
      */
     public  $email = null;
 
+    /**
+     * @var bool
+     */
+    public  $isBlocked = false;
+
     const ADMIN_ROLE = 'admin';
     const USER_ROLE = 'user';
 
@@ -73,6 +78,9 @@ class User implements ModelInterface
         if (isset($data['role'])) {
             $this->role = $data['role'];
         }
+        if (isset($data['isBlicked'])) {
+            $this->isBlocked = $data['isBlocked'];
+        }
     }
 
     public static function fromState(array $state)
@@ -85,7 +93,8 @@ class User implements ModelInterface
             $state['password'],
             $state['topic'],
             $state['numberOfChanges'],
-            $state['role']
+            $state['role'],
+            $state['isBlocked'] === '1'
         );
     }
 
@@ -98,6 +107,7 @@ class User implements ModelInterface
             'topic' => $this->topic,
             'numberOfChanges' => $this->numberOfChanges,
             'role' => $this->role,
+            'isBlocked' => $this->isBlocked
         ];
 
         if ($withPassword) {
@@ -111,7 +121,7 @@ class User implements ModelInterface
         return $this->role === self::ADMIN_ROLE;
     }
 
-    public function __construct($id, $username, $fullName, $email, $password, $topic = null, $numberOfChanges = 0, $role = 'user')
+    public function __construct($id, $username, $fullName, $email, $password, $topic = null, $numberOfChanges = 0, $role = 'user', $isBlocked = false)
     {
         $this->id = $id;
         $this->username = $username;
@@ -121,6 +131,7 @@ class User implements ModelInterface
         $this->topic = $topic;
         $this->numberOfChanges = $numberOfChanges;
         $this->role = $role;
+        $this->isBlocked = $isBlocked;
     }
 
     /**

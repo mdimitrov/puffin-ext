@@ -20,7 +20,8 @@ class UserMapper implements MapperInterface
           email,
           role,
           theme_id as topic,
-          num_of_changes as numberOfChanges
+          num_of_changes as numberOfChanges,
+          is_blocked as isBlocked
         FROM user';
 
     /**
@@ -224,6 +225,18 @@ class UserMapper implements MapperInterface
         return $statement->rowCount();
     }
 
+    public function updateBlocked($userId, $data) {
+        $userData = [
+            'id' => $userId,
+            'is_blocked' => $data['blocked']
+        ];
+
+        $sql = 'UPDATE user SET is_blocked=:is_blocked WHERE id=:id';
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($userData);
+        return $statement->rowCount();
+    }
+
     public function delete($userId) {
         $userData = [
             'id' => $userId
@@ -244,8 +257,8 @@ class UserMapper implements MapperInterface
         $userData = $model->toAssoc();
 
         $sql = '
-        INSERT INTO user (id, username, full_name, email, password, theme_id, num_of_changes, role)
-        VALUES (:id, :username, :fullName, :email, MD5(:password), :topic, :numOfChanges, :role)
+        INSERT INTO user (id, username, full_name, email, password, theme_id, num_of_changes, role, is_blocked)
+        VALUES (:id, :username, :fullName, :email, MD5(:password), :topic, :numOfChanges, :role, :is_blocked)
         ON DUPLICATE KEY UPDATE
             id=VALUES(id),
             username=VALUES(username),
@@ -254,7 +267,8 @@ class UserMapper implements MapperInterface
             password=VALUES(password),
             theme_id=VALUES(theme_id),
             num_of_changes=VALUES(num_of_changes),
-            role=VALUES(role);
+            role=VALUES(role),
+            is_blocked=VALUES(is_blocked);
         ';
         $statement = $this->pdo->prepare($sql);
         $statement->execute($userData);
