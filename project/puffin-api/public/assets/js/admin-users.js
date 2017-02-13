@@ -61,7 +61,7 @@ function onPageLoad() {
         }
     };
 
-    xhttp.open('GET', '/api/users?limit=5' , true);
+    xhttp.open('GET', '/api/users' , true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send();
 }
@@ -151,6 +151,38 @@ function onResetPasswordClick(id) {
     xhttp.open('POST', '/api/users/password-reset', true);
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify({ email }));
+}
+
+function onSearchClick() {
+    const searchString = document.getElementById('search-input').value;
+    const requestUrl = searchString ? '/api/search/users?q=' + searchString  : '/api/users';
+
+   const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            var response = {};
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch (e) {
+                return;
+            }
+
+            if (this.status === 200) {
+                const table = document.getElementById('table');
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                response.data.forEach(constructTableRow);
+            } else {
+            }
+        }
+    };
+
+    xhttp.open('GET', requestUrl, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send();
 }
 
 window.onload = onPageLoad;

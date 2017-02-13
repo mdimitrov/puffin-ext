@@ -81,4 +81,36 @@ function onLockClick(id) {
     xhttp.send(JSON.stringify({ action: 'updateStatus', data: { status: newStatus } }));
 }
 
+function onSearchClick() {
+    const searchString = document.getElementById('search-input').value;
+    const requestUrl = searchString ? '/api/search/projects?q=' + searchString  : '/api/projects';
+
+   const xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+        if (this.readyState === 4) {
+            var response = {};
+
+            try {
+                response = JSON.parse(xhttp.responseText);
+            } catch (e) {
+                return;
+            }
+
+            if (this.status === 200) {
+                const table = document.getElementById('table');
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                response.data.forEach(constructTableRow);
+            } else {
+            }
+        }
+    };
+
+    xhttp.open('GET', requestUrl, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send();
+}
+
 window.onload = onPageLoad;
