@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
+date_default_timezone_set('Europe/Sofia');
 error_reporting(-1); // Display ALL errors
 ini_set('display_errors', '1');
 ini_set("session.use_only_cookies", '1'); // Don't allow session_id in URLs
