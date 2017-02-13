@@ -22,7 +22,7 @@ function constructTableRow(data, index) {
 
     const id = data.id;
 
-    cell1.innerHTML = data.username;
+    cell1.innerHTML = '<a href="/users/' + data.username + '">' + data.username + '</a>';
     cell2.innerHTML = data.fullName;
     cell3.innerHTML = data.email;
     cell4.innerHTML = data.topic;

@@ -141,7 +141,7 @@ CREATE TABLE `user` (
   `num_of_changes` int(11) NOT NULL,
   `role` varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `full_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `is_blocked` tinyint(1) NOT NULL DEFAULT 0
+  `is_blocked` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`,`username`),
   KEY `by_username_id` (`username`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

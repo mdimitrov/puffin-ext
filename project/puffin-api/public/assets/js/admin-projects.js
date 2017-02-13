@@ -16,7 +16,7 @@ function constructTableRow(data, index) {
     cell2.innerHTML = data.dateUploaded;
     cell3.innerHTML = data.version;
     cell4.innerHTML = data.comment;
-    cell5.innerHTML = data.username;
+    cell5.innerHTML = '<a href="/users/' + data.username + '">' + data.username + '</a>';
     cell6.innerHTML = data.fullName;
     cell7.innerHTML = data.status === 'locked' ? 'Заклюен' : 'Отключен';
     cell7.id = 'topic-status-' + data.id;
