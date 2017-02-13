@@ -156,7 +156,7 @@ $app->get('/users/{username}', function ($request, $response, $args) {
 
 $app->get('/user/send-password-reset', function ($request, $response, $args) {
     return $this->renderer->render($response, 'send-password-reset.phtml');
-})->add($ensureSession);
+});
 
 $app->get('/user/reset-password', function ($request, $response, $args) {
     $userId = $request->getParam('user');

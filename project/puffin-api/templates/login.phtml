@@ -37,7 +37,7 @@
             font-size: 19px;
             text-align: center;
         }
-        .login-button {
+        .button {
             flex: 1;
             margin: 20px 0;
             border-radius: 3px;
@@ -49,6 +49,11 @@
             font-size: 19px;
             text-align: center;
             cursor: pointer;
+        }
+        .button.forgot-password {
+            display: block;
+            background-color: red;
+            box-shadow: 0px 3px 0px 0px #b3153e;
         }
         input {
             width: 98%;
@@ -76,7 +81,8 @@
     <div class="input-label">Парола:</div>
     <input id="password" type="password" name="password">
     <div id="error" class="error"></div>
-    <div class="login-button" onclick="onSend()">Вход</div>
+    <div class="button" onclick="onSend()">Вход</div>
+    <a href="/user/send-password-reset" class="button forgot-password">Забравена парола</a>
 </div>
 </body>
 </html>
