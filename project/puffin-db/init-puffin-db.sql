@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.1.20-MariaDB-1~jessie)
 # Database: puffin
-# Generation Time: 2017-02-12 08:40:40 +0000
+# Generation Time: 2017-02-13 07:42:55 +0000
 # ************************************************************
 
 
@@ -45,6 +45,29 @@ VALUES
 	(3,'81011_2_71',24,'[MP] Изглежда да работи кирилицата?!',-1);
 
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table password_recovery_code
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `password_recovery_code`;
+
+CREATE TABLE `password_recovery_code` (
+  `user_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(32) NOT NULL DEFAULT '',
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `password_recovery_code_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `password_recovery_code` WRITE;
+/*!40000 ALTER TABLE `password_recovery_code` DISABLE KEYS */;
+
+INSERT INTO `password_recovery_code` (`user_id`, `code`)
+VALUES
+	(1,'650c12cdb331909add098ae6ccfcb1df');
+
+/*!40000 ALTER TABLE `password_recovery_code` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -110,15 +133,15 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
-  `id` int(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `theme_id` int(20) DEFAULT NULL,
   `num_of_changes` int(11) NOT NULL,
   `role` varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `full_name` varchar(128) DEFAULT NULL,
-  `is_blocked` tinyint(1) NOT NULL DEFAULT '0',
+  `full_name` varchar(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `is_blocked` tinyint(1) NOT NULL DEFAULT 0
   PRIMARY KEY (`id`,`username`),
   KEY `by_username_id` (`username`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -128,7 +151,7 @@ LOCK TABLES `user` WRITE;
 
 INSERT INTO `user` (`id`, `username`, `password`, `email`, `theme_id`, `num_of_changes`, `role`, `full_name`)
 VALUES
-	(1,'mihael','4297f44b13955235245b2497399d7a93','mihael.dimitroff@gmail.com',128,0,'admin','Mihael Dimitrov'),
+	(1,'mihael','efe6398127928f1b2e9ef3207fb82663','mihael.dimitroff@gmail.com',128,0,'admin','Mihael Dimitrov'),
 	(2,'atanas','4297f44b13955235245b2497399d7a93','atanas.yancevski@gmail.com',128,0,'user','Atanas');
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
