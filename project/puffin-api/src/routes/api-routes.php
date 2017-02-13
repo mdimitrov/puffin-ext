@@ -137,6 +137,13 @@ $app->put('/api/users/{userId}', function ($request, $response, $args) {
         ], 403);
     }
 
+    if ($updateAction === 'updateStatus' && !$loggedUser->isAdmin()) {
+        return $response->withJson([
+            'ok' => false,
+            'message' => 'Access Denied'
+        ], 403);
+    }
+
     if (isset($updateData) && method_exists($um, $updateAction)) {
         $um->{$updateAction}($userId, $updateData);
         $user->setFromAssoc($updateData);

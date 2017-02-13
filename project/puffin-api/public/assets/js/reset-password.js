@@ -44,5 +44,5 @@ function onSend() {
 
     xhttp.open('POST', '/api/users/' + id + '/_reset_password', true);
     xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify({ action: 'updatePassword', data: { newPassword, code } }));
+    xhttp.send(JSON.stringify({ newPassword, code }));
 }
