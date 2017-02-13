@@ -191,7 +191,3 @@ $app->get('/user/reset-password', function ($request, $response, $args) {
         'code' => $code
     ]);
 });
-
-$app->get('/user/reset-email-sent', function ($request, $response, $args) {
-    return $this->renderer->render($response, 'reset-email-sent.phtml');
-})->add($ensureSession);
