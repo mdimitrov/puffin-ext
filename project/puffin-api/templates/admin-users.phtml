@@ -86,12 +86,27 @@
                 background-color: #b7b71d;
                 box-shadow: 0px 3px 0px 0px #5e630d;
             }
+            .search-input-wrapper {
+                display: flex;
+                margin: 0 30px;
+                justify-content: center;
+                align-items: center;
+            }
+            .search.button {
+                flex: initial;
+                width: 120px;
+                margin-left: 30px;
+            }
+            .search-input {
+                height: 28px;
+                margin-top: 2px;
+            }
         </style>
         <script src="/assets/js/admin-users.js"></script>
     </head>
     <body>
         <div class="page-header">Администратор</div>
-        <div class="page-subheader">Потребители</div
+        <div class="page-subheader">Потребители</div>
         <div class="search-input-wrapper">
             <input id="search-input" class="search-input" />
             <div class="button search" onclick="onSearchClick()">Търси</div>
