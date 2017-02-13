@@ -95,7 +95,11 @@ LOCK TABLES `projects` WRITE;
 INSERT INTO `projects` (`id`, `user_id`, `version`, `comment`, `theme`, `uploaded`, `status`)
 VALUES
 	(28,1,1,'Първоначална версия. Не са коригирани датите.',128,'2016-11-10 18:43:53','unlocked'),
-	(29,2,1,'nz версия',129,'2017-02-11 21:18:47','unlocked');
+	(29,2,1,'nz версия',129,'2017-02-11 21:18:47','unlocked'),
+  (30,3,1,'Test version.',300,'2016-11-12 18:43:53','locked'),
+	(31,4,1,'First commit',120,'2017-03-11 21:18:47','unlocked'),
+  (32,5,1,'Финална версия.',12,'2015-11-10 22:43:53','unlocked'),
+	(33,6,1,'Финална версия!',67,'2017-02-11 22:18:47','locked');
 
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -152,7 +156,11 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` (`id`, `username`, `password`, `email`, `theme_id`, `num_of_changes`, `role`, `full_name`)
 VALUES
 	(1,'mihael','efe6398127928f1b2e9ef3207fb82663','mihael.dimitroff@gmail.com',128,0,'admin','Mihael Dimitrov'),
-	(2,'atanas','4297f44b13955235245b2497399d7a93','atanas.yancevski@gmail.com',128,0,'user','Atanas');
+	(2,'atanas','098f6bcd4621d373cade4e832627b4f6','atanas.yanchevski@gmail.com',129,0,'user','Atanas Yanchevski'),
+  (3,'milen','cc03e747a6afbbcbf8be7668acfebee5','atanas.yanchevski+milen@gmail.com',67,0,'user','Milen Komitov'),
+	(4,'galin','cc03e747a6afbbcbf8be7668acfebee5','atanas.yanchevski+galin@gmail.com',12,0,'user','Galin Angelov'),
+  (5,'svilen','cc03e747a6afbbcbf8be7668acfebee5','mihael.dimitroff+svilen@gmail.com',30,0,'user','Svilen Bashov'),
+	(6,'emil','cc03e747a6afbbcbf8be7668acfebee5','atanas.yanchevsk+emil@gmail.com',120,0,'user','Emil Velikov');
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

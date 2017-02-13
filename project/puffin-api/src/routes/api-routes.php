@@ -331,8 +331,6 @@ $app->post('/api/users/password-reset', function ($request, $response, $args) {
     if(!$mail->send()) {
         echo 'Message could not be sent.';
         echo 'Mailer Error: ' . $mail->ErrorInfo;
-    } else {
-        echo 'Message has been sent';
     }
 
     /** @var $response \Slim\Http\Response */
